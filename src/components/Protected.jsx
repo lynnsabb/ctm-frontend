@@ -1,14 +1,27 @@
 // src/components/Protected.jsx
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../state/auth";
+import { useAuth } from "../state/auth.jsx";
 
-export function RequireLogin({ children }) {
-  const { user } = useAuth();
-  return user ? children : <Navigate to="/login" replace />;
-}
+/**
+ * Protect routes by requiring login or specific roles
+ * Example:
+ *   <Protected>Students or instructors logged in</Protected>
+ *   <Protected role="student">Students only</Protected>
+ */
+export default function Protected({ children, role }) {
+  const { user, loading } = useAuth();
 
-export function RequireRole({ role, children }) {
-  const { user } = useAuth();
-  if (!user) return <Navigate to="/login" replace />;
-  return user.role === role ? children : <Navigate to="/" replace />;
+  if (loading) return null; // wait until user is loaded
+
+  if (!user) {
+    // Not logged in
+    return <Navigate to="/login" replace />;
+  }
+
+  if (role && user.role !== role) {
+    // Wrong role
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
 }
