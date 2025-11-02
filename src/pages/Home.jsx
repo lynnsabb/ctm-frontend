@@ -262,14 +262,14 @@ export default function Home() {
                 to="/courses"
                 className="inline-flex items-center justify-center px-8 py-4 bg-white text-indigo-600 font-semibold rounded-xl hover:bg-blue-50 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               >
-                <span className="mr-2 text-2xl">📚</span>
+                <span className="mr-2 text-2xl"></span>
                 Explore Courses
               </Link>
               <Link
                 to="/login"
                 className="inline-flex items-center justify-center px-8 py-4 bg-indigo-700 text-white font-semibold rounded-xl hover:bg-indigo-800 transition-all duration-300 border-2 border-indigo-400"
               >
-                <span className="mr-2">🔑</span>
+                <span className="mr-2"></span>
                 Sign In
               </Link>
             </div>
@@ -603,33 +603,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Why Choose Us Section (Dark Background) */}
-      <section className="bg-gray-900 text-white py-12 md:py-16">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose LearnHub?</h2>
-            <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-              Experience the difference with our comprehensive learning platform
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {whyChooseUsData.map((item, index) => (
-              <div
-                key={index}
-                className="bg-gray-800 p-6 rounded-xl border border-gray-700 hover:border-indigo-500 transition-all duration-300 hover:-translate-y-1"
-              >
-                <div className="inline-flex items-center justify-center w-14 h-14 bg-indigo-600 rounded-xl mb-4">
-                  <DynamicIcon iconName={item.icon} className="text-white" />
-                </div>
-                <h3 className="text-xl font-bold mb-2">{item.title}</h3>
-                <p className="text-gray-300">{item.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Call to Action / Join Section */}
       <section className="max-w-7xl mx-auto px-4 py-12 md:py-16">
         <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 md:p-12 text-center text-white">
