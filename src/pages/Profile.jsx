@@ -125,7 +125,9 @@ export default function Profile() {
                           {course.level}
                         </span>
                         <span className="inline-block text-xs px-2 py-1 rounded-lg bg-gray-100 text-gray-700">
-                          Instructor: {course.instructor}
+                          Instructor: {typeof course.instructor === 'string' 
+                            ? course.instructor 
+                            : course.instructor?.name || 'Unknown'}
                         </span>
                       </div>
                     </div>

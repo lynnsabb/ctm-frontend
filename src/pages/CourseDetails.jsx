@@ -1,6 +1,7 @@
-import { useState, useMemo } from "react";
-import { useParams, Link } from "react-router-dom";
-import { mockCourses } from "../data/mock";
+import { useState, useMemo, useEffect } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { mockCourses, enrollWithStructure, getEnrollmentsNormalized, getSessionUser } from "../data/mock";
+import { useAuth } from "../state/auth.jsx";
 
 // Icons
 function IconArrowLeft(props) { return (<svg viewBox="0 0 24 24" width="20" height="20" {...props}><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" /></svg>); }
@@ -16,12 +17,17 @@ function IconCheckCircle(props) { return (<svg viewBox="0 0 24 24" width="20" he
 export default function CourseDetails({ course: courseProp, onBack }) {
   const { id: idParam } = useParams(); // support /courses/:id
   const paramId = idParam ? Number(idParam) : undefined;
+  const navigate = useNavigate();
+  const { user } = useAuth() || { user: null };
 
   // Prefer prop; else find by route param; else null
   const fromMock = mockCourses.find(c => c.id === paramId) || null;
   const base = courseProp || fromMock;
 
-  // Fallback defaults if some fields aren’t in the mock
+  // Toast state
+  const [showToast, setShowToast] = useState(false);
+
+  // Fallback defaults if some fields aren't in the mock
   const defaultCurriculum = [
     {
       id: 1,
@@ -53,10 +59,17 @@ export default function CourseDetails({ course: courseProp, onBack }) {
     rating: base?.rating ?? 4.7,
     students: base?.students ?? 1200,
     duration: base?.duration ?? "20h",
-    language: "English",
-    certificate: "Yes",
+    language: base?.language || "English",
+    certificate: base?.certificate === true ? "Yes" : base?.certificate || "Yes",
     image: base?.image ?? "https://images.unsplash.com/photo-1547658719-da2b51169166?w=1200&h=600&fit=crop",
-    instructor: {
+    instructor: (base && typeof base.instructor === 'object' && base.instructor) ? {
+      name: base.instructor.name || "Instructor",
+      title: base.instructor.role || "Senior Instructor",
+      avatar: base.instructor.image || "https://i.pravatar.cc/150?img=12",
+      bio: base.instructor.experience || "Passionate educator with real-world experience.",
+      courses: base.instructor.coursesTaught || 7,
+      students: base.instructor.students || 25000,
+    } : {
       name: (base && base.instructor) || "Instructor",
       title: "Senior Instructor",
       avatar: "https://i.pravatar.cc/150?img=12",
@@ -78,7 +91,47 @@ export default function CourseDetails({ course: courseProp, onBack }) {
     [courseData.curriculum]
   );
 
+  // Check if user is a student
+  const isStudent = user?.role === "student";
+  const sessionUser = user || getSessionUser();
+  const canEnroll = isStudent && sessionUser;
+
+  // Check if user is enrolled
+  const enrolledList = useMemo(() => getEnrollmentsNormalized(), []);
+  const isEnrolled = useMemo(() => {
+    if (!courseData?.id) return false;
+    return enrolledList.some(e => 
+      e.courseId === courseData.id || 
+      e.courseId === String(courseData.id) ||
+      Number(e.courseId) === courseData.id
+    );
+  }, [enrolledList, courseData?.id]);
+
   const [expandedModule, setExpandedModule] = useState(null);
+
+  // Handle enrollment
+  const handleEnroll = () => {
+    if (!canEnroll || isEnrolled || !courseData?.id) return;
+    
+    const courseIdToEnroll = courseData.id;
+    enrollWithStructure(courseIdToEnroll);
+    
+    // Show success toast
+    setShowToast(true);
+    
+    // Redirect after a short delay
+    setTimeout(() => {
+      navigate("/enrollments");
+    }, 1500);
+  };
+
+  // Close toast after timeout
+  useEffect(() => {
+    if (showToast) {
+      const timer = setTimeout(() => setShowToast(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showToast]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -230,13 +283,51 @@ export default function CourseDetails({ course: courseProp, onBack }) {
                   </div>
                 </div>
 
-                {/* Optional: CTA to go to the first module */}
-                <Link
-                  to="/courses"
-                  className="w-full inline-flex justify-center px-6 py-3 bg-gray-900 text-white rounded-lg font-semibold hover:bg-gray-800 transition"
-                >
-                  Browse More Courses
-                </Link>
+                {/* Enrollment button for students */}
+                {canEnroll && (
+                  <>
+                    {isEnrolled ? (
+                      <button
+                        disabled
+                        className="w-full inline-flex justify-center items-center gap-2 px-6 py-3 bg-green-100 text-green-700 rounded-lg font-semibold cursor-not-allowed border border-green-300"
+                      >
+                        <span>✅</span>
+                        Already Enrolled
+                      </button>
+                    ) : (
+                      <button
+                        onClick={handleEnroll}
+                        className="w-full inline-flex justify-center px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition shadow-lg hover:shadow-xl"
+                      >
+                        Enroll Now
+                      </button>
+                    )}
+                    <Link
+                      to="/enrollments"
+                      className="w-full inline-flex justify-center px-6 py-3 bg-gray-100 text-gray-900 rounded-lg font-semibold hover:bg-gray-200 transition border border-gray-300"
+                    >
+                      My Learning
+                    </Link>
+                  </>
+                )}
+                
+                {/* For non-students or logged-out users */}
+                {!canEnroll && (
+                  <Link
+                    to="/courses"
+                    className="w-full inline-flex justify-center px-6 py-3 bg-gray-900 text-white rounded-lg font-semibold hover:bg-gray-800 transition"
+                  >
+                    Browse More Courses
+                  </Link>
+                )}
+
+                {/* Toast notification */}
+                {showToast && (
+                  <div className="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-4 rounded-xl shadow-lg z-50 flex items-center gap-2 animate-in fade-in slide-in-from-bottom">
+                    <span>✅</span>
+                    <span>Enrolled successfully! Redirecting to My Learning...</span>
+                  </div>
+                )}
               </div>
             </div>
           </aside>

@@ -59,9 +59,12 @@ export default function CourseCatalog() {
     let list = [...courses];
     const query = searchQuery.trim().toLowerCase();
     if (query) {
-      list = list.filter(c =>
-        [c.title, c.description, c.category, c.instructor].join(' ').toLowerCase().includes(query)
-      );
+      list = list.filter(c => {
+        const instructorName = typeof c.instructor === 'string' 
+          ? c.instructor 
+          : c.instructor?.name || '';
+        return [c.title, c.description, c.category, instructorName].join(' ').toLowerCase().includes(query);
+      });
     }
     if (selectedCategory !== 'All') list = list.filter(c => c.category === selectedCategory);
     if (selectedLevel !== 'All') list = list.filter(c => c.level === selectedLevel);
@@ -117,7 +120,11 @@ export default function CourseCatalog() {
                     <p className="text-gray-600 text-sm mb-4 line-clamp-2">{course.description}</p>
 
                     <p className="text-sm text-gray-500 mb-4">
-                      Instructor: <span className="font-medium text-gray-800">{course.instructor}</span>
+                      Instructor: <span className="font-medium text-gray-800">
+                        {typeof course.instructor === 'string' 
+                          ? course.instructor 
+                          : course.instructor?.name || 'Unknown'}
+                      </span>
                     </p>
 
                     {/* Icons: Rating / Students / Duration */}
