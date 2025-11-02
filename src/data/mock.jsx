@@ -1,4 +1,84 @@
 // ====== Core mock data (courses stay the same) ======
+// Shared mock course data accessible everywhere
+// Shared mock course data accessible throughout the app
+export const mockCourses = [
+  {
+    id: 1,
+    title: 'Python for Beginners',
+    description: 'Start your programming journey with Python. Learn syntax, data structures, and build practical projects.',
+    category: 'Programming',
+    level: 'Beginner',
+    instructor: 'Emma Thompson',
+    rating: 4.6,
+    students: 3421,
+    duration: '20h',
+    image: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=800&h=400&fit=crop'
+  },
+  {
+    id: 2,
+    title: 'Machine Learning Fundamentals',
+    description: 'Introduction to machine learning concepts, algorithms, and practical applications using Python.',
+    category: 'Data Science',
+    level: 'Intermediate',
+    instructor: 'Dr. Liam Carter',
+    rating: 4.7,
+    students: 2103,
+    duration: '35h',
+    image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=400&fit=crop'
+  },
+  {
+    id: 3,
+    title: 'UI/UX Design Masterclass',
+    description: 'Learn user interface and user experience design principles. Create stunning, user-friendly designs.',
+    category: 'Design',
+    level: 'Beginner',
+    instructor: 'Sophia Miller',
+    rating: 4.8,
+    students: 1567,
+    duration: '30h',
+    image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=400&fit=crop'
+  },
+  {
+    id: 4,
+    title: 'Web Development Bootcamp',
+    description: 'Complete guide to modern web development with HTML, CSS, JavaScript, and React.',
+    category: 'Programming',
+    level: 'Beginner',
+    instructor: 'Ethan Williams',
+    rating: 4.9,
+    students: 4832,
+    duration: '45h',
+    image: 'https://images.unsplash.com/photo-1547658719-da2b51169166?w=800&h=400&fit=crop'
+  },
+  {
+    id: 5,
+    title: 'Data Analytics with SQL',
+    description: 'Master SQL for data analysis, from basic queries to advanced database management.',
+    category: 'Data Science',
+    level: 'Intermediate',
+    instructor: 'Olivia Brown',
+    rating: 4.5,
+    students: 2890,
+    duration: '25h',
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop'
+  },
+  {
+    id: 6,
+    title: 'Digital Marketing Strategy',
+    description: 'Learn modern digital marketing techniques, SEO, social media, and content marketing.',
+    category: 'Marketing',
+    level: 'Beginner',
+    instructor: 'Noah Johnson',
+    rating: 4.4,
+    students: 1923,
+    duration: '18h',
+    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop'
+  }
+];
+
+
+
+
 export const courses = [
   {
     id: 'react-101',
@@ -8,14 +88,18 @@ export const courses = [
     description: 'Learn React fundamentals: components, props, state, effects.',
     instructor: 'Jane Doe',
     modules: [
-      { id: 'm1', title: 'Getting Started', lessons: [
-        { id: 'l1', title: 'What is React?' },
-        { id: 'l2', title: 'Vite + JSX' },
-      ]},
-      { id: 'm2', title: 'Core Concepts', lessons: [
-        { id: 'l3', title: 'Props & State' },
-        { id: 'l4', title: 'useEffect basics' },
-      ]},
+      {
+        id: 'm1', title: 'Getting Started', lessons: [
+          { id: 'l1', title: 'What is React?' },
+          { id: 'l2', title: 'Vite + JSX' },
+        ]
+      },
+      {
+        id: 'm2', title: 'Core Concepts', lessons: [
+          { id: 'l3', title: 'Props & State' },
+          { id: 'l4', title: 'useEffect basics' },
+        ]
+      },
     ],
   },
   {
@@ -26,10 +110,12 @@ export const courses = [
     description: 'Practical TS types, interfaces, generics, React with TS.',
     instructor: 'John Smith',
     modules: [
-      { id: 'm1', title: 'Types Everywhere', lessons: [
-        { id: 'l1', title: 'Primitives & Objects' },
-        { id: 'l2', title: 'Functions & Generics' },
-      ]},
+      {
+        id: 'm1', title: 'Types Everywhere', lessons: [
+          { id: 'l1', title: 'Primitives & Objects' },
+          { id: 'l2', title: 'Functions & Generics' },
+        ]
+      },
     ],
   },
   {
@@ -40,17 +126,19 @@ export const courses = [
     description: 'Build simple APIs with Node.js and Express.',
     instructor: 'Alex Kim',
     modules: [
-      { id: 'm1', title: 'Intro', lessons: [
-        { id: 'l1', title: 'Node runtime' },
-        { id: 'l2', title: 'Express basics' },
-      ]},
+      {
+        id: 'm1', title: 'Intro', lessons: [
+          { id: 'l1', title: 'Node runtime' },
+          { id: 'l2', title: 'Express basics' },
+        ]
+      },
     ],
   },
 ];
 
 // ====== Demo users + roles (Phase 1 mock auth) ======
 export const users = [
-  { id: 'u1', name: 'Student One',    email: 'student1@example.com',    password: '123456', role: 'student' },
+  { id: 'u1', name: 'Student One', email: 'student1@example.com', password: '123456', role: 'student' },
   { id: 'u2', name: 'Instructor One', email: 'instructor1@example.com', password: '123456', role: 'instructor' },
 ];
 
