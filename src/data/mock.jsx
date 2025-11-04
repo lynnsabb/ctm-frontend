@@ -274,7 +274,7 @@ export const courses = [
     title: 'React 101',
     level: 'Beginner',
     category: 'Frontend',
-    description: 'Learn React fundamentals: components, props, state, effects.',
+    description: 'Learn React fundamentals: components, props, state, and effects.',
     instructor: 'Jane Doe',
     modules: [
       {
@@ -286,23 +286,7 @@ export const courses = [
       {
         id: 'm2', title: 'Core Concepts', lessons: [
           { id: 'l3', title: 'Props & State' },
-          { id: 'l4', title: 'useEffect basics' },
-        ]
-      },
-    ],
-  },
-  {
-    id: 'ts-essentials',
-    title: 'TypeScript Essentials',
-    level: 'Intermediate',
-    category: 'Language',
-    description: 'Practical TS types, interfaces, generics, React with TS.',
-    instructor: 'John Smith',
-    modules: [
-      {
-        id: 'm1', title: 'Types Everywhere', lessons: [
-          { id: 'l1', title: 'Primitives & Objects' },
-          { id: 'l2', title: 'Functions & Generics' },
+          { id: 'l4', title: 'useEffect Basics' },
         ]
       },
     ],
@@ -317,13 +301,14 @@ export const courses = [
     modules: [
       {
         id: 'm1', title: 'Intro', lessons: [
-          { id: 'l1', title: 'Node runtime' },
-          { id: 'l2', title: 'Express basics' },
+          { id: 'l1', title: 'Node Runtime' },
+          { id: 'l2', title: 'Express Basics' },
         ]
       },
     ],
   },
 ];
+
 
 // ====== Demo users + roles (Phase 1 mock auth) ======
 export const users = [
@@ -469,45 +454,56 @@ export function unmarkCourseCompleted(courseId) {
 export const instructors = [
   {
     id: 1,
-    name: 'Emma Thompson',
-    specialty: 'Python & Programming',
+    name: "Emma Thompson",
+    specialty: "Python & Programming",
     yearsOfExperience: 8,
-    photo: 'https://i.pravatar.cc/150?img=12',
-    bio: 'Experienced software engineer and educator passionate about making programming accessible.',
+    photo:
+      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&h=300&fit=crop&crop=faces",
+    bio:
+      "Experienced software engineer and educator passionate about making programming accessible.",
     courses: 12,
-    students: 15000
+    students: 15000,
   },
   {
     id: 2,
-    name: 'Dr. Liam Carter',
-    specialty: 'Machine Learning & AI',
+    name: "Dr. Liam Carter",
+    specialty: "Machine Learning & AI",
     yearsOfExperience: 12,
-    photo: 'https://i.pravatar.cc/150?img=13',
-    bio: 'PhD in Computer Science with extensive research in machine learning and data science.',
+    photo:
+      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&h=300&fit=crop&crop=faces",
+    bio:
+      "PhD in Computer Science with extensive research in machine learning and data science.",
     courses: 8,
-    students: 8500
+    students: 8500,
   },
   {
     id: 3,
-    name: 'Sophia Miller',
-    specialty: 'UI/UX Design',
+    name: "Sophia Miller",
+    specialty: "UI/UX Design",
     yearsOfExperience: 10,
-    photo: 'https://i.pravatar.cc/150?img=47',
-    bio: 'Award-winning designer with expertise in creating intuitive and beautiful user experiences.',
+    photo:
+      "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=300&h=300&fit=crop&crop=faces",
+    bio:
+      "Award-winning designer with expertise in creating intuitive and beautiful user experiences.",
     courses: 15,
-    students: 12000
+    students: 12000,
   },
   {
     id: 4,
-    name: 'Ethan Williams',
-    specialty: 'Web Development',
+    name: "Ethan Williams",
+    specialty: "Web Development",
     yearsOfExperience: 9,
-    photo: 'https://i.pravatar.cc/150?img=32',
-    bio: 'Full-stack developer and educator specializing in modern web technologies.',
+    photo:
+      "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=300&h=300&fit=crop&crop=faces",
+    bio:
+      "Full-stack developer and educator specializing in modern web technologies.",
     courses: 18,
-    students: 20000
-  }
+    students: 20000,
+  },
 ];
+
+
+
 
 // ====== Mock testimonials data ======
 export const testimonials = [

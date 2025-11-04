@@ -1,4 +1,3 @@
-// src/components/Navbar.jsx
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../state/auth.jsx";
 import { useEffect, useState } from "react";
@@ -28,7 +27,11 @@ export default function Navbar() {
           to="/"
           className="flex items-center gap-2 font-semibold text-lg text-gray-900"
         >
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg border">🎓</span>
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/4431/4431898.png"
+            alt="LearnHub Logo"
+            className="w-8 h-8 object-contain rounded-lg"
+          />
           LearnHub
         </Link>
 

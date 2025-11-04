@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from "../state/auth.jsx";
+
 import { 
   mockCourses as courses,
   instructors,
@@ -201,9 +203,13 @@ function DynamicIcon({ iconName, ...props }) {
 }
 
 export default function Home() {
+
+  const { user, isAuthenticated } = useAuth(); 
+
   const [searchQuery, setSearchQuery] = useState("");
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [newsletterEmail, setNewsletterEmail] = useState("");
+
 
   // Get top 6 courses sorted by rating (for popular section)
   const popularCourses = [...courses]
@@ -258,21 +264,32 @@ export default function Home() {
               Explore Free Courses and Learn Anytime, Anywhere.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link
-                to="/courses"
-                className="inline-flex items-center justify-center px-8 py-4 bg-white text-indigo-600 font-semibold rounded-xl hover:bg-blue-50 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-              >
-                <span className="mr-2 text-2xl"></span>
-                Explore Courses
-              </Link>
-              <Link
-                to="/login"
-                className="inline-flex items-center justify-center px-8 py-4 bg-indigo-700 text-white font-semibold rounded-xl hover:bg-indigo-800 transition-all duration-300 border-2 border-indigo-400"
-              >
-                <span className="mr-2"></span>
-                Sign In
-              </Link>
-            </div>
+  <Link
+    to="/courses"
+    className="inline-flex items-center justify-center px-8 py-4 bg-white text-indigo-600 font-semibold rounded-xl hover:bg-blue-50 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+  >
+    Explore Courses
+  </Link>
+
+  {isAuthenticated ? (
+    <Link
+      to={user?.role === "instructor" ? "/manage" : "/enrollments"}
+      className="inline-flex items-center justify-center px-8 py-4 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-all duration-300 border-2 border-green-300"
+    >
+      {user?.role === "instructor"
+        ? "Go to Manage Courses"
+        : "Go to My Learning"}
+    </Link>
+  ) : (
+    <Link
+      to="/login"
+      className="inline-flex items-center justify-center px-8 py-4 bg-indigo-700 text-white font-semibold rounded-xl hover:bg-indigo-800 transition-all duration-300 border-2 border-indigo-400"
+    >
+      Sign In
+    </Link>
+  )}
+</div>
+
           </div>
         </div>
       </section>
@@ -349,30 +366,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Course Category Grid Section */}
-      <section className="bg-gray-50 py-12 md:py-16">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Browse by Category</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">Explore courses organized by topic</p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {categories.map((category) => (
-              <Link
-                key={category.id}
-                to={`/courses?category=${encodeURIComponent(category.name.split(' ')[0])}`}
-                className={`bg-gradient-to-br ${category.color} rounded-xl p-6 text-white hover:shadow-lg transition-all duration-300 hover:-translate-y-1 text-center`}
-              >
-                <div className="flex justify-center mb-3">
-                  <DynamicIcon iconName={category.icon} className="text-white" />
-                </div>
-                <h3 className="font-semibold text-sm">{category.name}</h3>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
+      
       {/* Popular Courses Section with Search */}
       <section className="bg-white py-12 md:py-16">
         <div className="max-w-7xl mx-auto px-4">
@@ -613,12 +607,19 @@ export default function Home() {
             Join our community of learners today and start your journey towards mastery.
           </p>
           <Link
-            to="/register"
-            className="inline-flex items-center px-8 py-4 bg-white text-indigo-600 font-semibold rounded-xl hover:bg-blue-50 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-          >
-            Get Started
-            <IconArrowRight className="ml-2" />
-          </Link>
+  to={
+    isAuthenticated
+      ? user?.role === "instructor"
+        ? "/manage"
+        : "/enrollments"
+      : "/register"
+  }
+  className="inline-flex items-center px-8 py-4 bg-white text-indigo-600 font-semibold rounded-xl hover:bg-blue-50 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+>
+  {isAuthenticated ? "Go to Dashboard" : "Get Started"}
+  <IconArrowRight className="ml-2" />
+</Link>
+
         </div>
       </section>
 

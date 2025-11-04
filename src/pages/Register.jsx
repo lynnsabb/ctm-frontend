@@ -17,13 +17,19 @@ export default function Register() {
   return (
     <section className="min-h-[80vh] flex items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-sm p-8 border">
-        {/* Header */}
-        <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Create an Account</h1>
-          <p className="text-gray-600 text-sm mt-1">
-            Join LearnHub and start your learning journey.
-          </p>
+        {/* Logo + Header */}
+        <div className="flex items-center justify-center gap-3 mb-6">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/4431/4431898.png"
+            alt="LearnHub Logo"
+            className="w-10 h-10 object-contain rounded-lg"
+          />
+          <h1 className="text-2xl font-bold text-gray-900">LearnHub</h1>
         </div>
+
+        <p className="text-gray-600 text-sm text-center mb-6">
+          Create an account to start your learning journey.
+        </p>
 
         {/* Form */}
         <form onSubmit={onSubmit} className="space-y-4">
@@ -76,10 +82,7 @@ export default function Register() {
         {/* Footer */}
         <p className="text-sm text-center text-gray-600 mt-6">
           Already have an account?{" "}
-          <Link
-            to="/login"
-            className="text-black font-medium hover:underline"
-          >
+          <Link to="/login" className="text-black font-medium hover:underline">
             Log in
           </Link>
         </p>
