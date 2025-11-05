@@ -5,15 +5,16 @@ import { mockCourses, enrollWithStructure, getEnrollmentsNormalized, getSessionU
 import { useAuth } from "../state/auth.jsx";
 import { instructors as instructorsList } from "../data/mock";
 
-function IconArrowLeft(props){return(<svg viewBox="0 0 24 24" width="20" height="20" {...props}><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>)}
-function IconStar(props){return(<svg viewBox="0 0 24 24" width="16" height="16" {...props}><path fill="currentColor" d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z"/></svg>)}
-function IconUsers(props){return(<svg viewBox="0 0 24 24" width="16" height="16" {...props}><path fill="currentColor" d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0C9.66 11 11 9.66 11 8S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5C18 14.17 13.33 13 11 13zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5C26 14.17 21.33 13 19 13z"/></svg>)}
-function IconClock(props){return(<svg viewBox="0 0 24 24" width="16" height="16" {...props}><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm.5 5H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>)}
-function IconBook(props){return(<svg viewBox="0 0 24 24" width="20" height="20" {...props}><path fill="currentColor" d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>)}
-function IconChevronDown(props){return(<svg viewBox="0 0 24 24" width="20" height="20" {...props}><path fill="currentColor" d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>)}
-function IconGlobe(props){return(<svg viewBox="0 0 24 24" width="20" height="20" {...props}><path fill="currentColor" d="M12 2C6.47 2 2 6.48 2 12s4.47 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"/></svg>)}
-function IconCertificate(props){return(<svg viewBox="0 0 24 24" width="20" height="20" {...props}><path fill="currentColor" d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9h-4v4h-2v-4H9V9h4V5h2v4h4v2z"/></svg>)}
-function IconCheckCircle(props){return(<svg viewBox="0 0 24 24" width="20" height="20" {...props}><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>)}
+function IconArrowLeft(props) { return (<svg viewBox="0 0 24 24" width="20" height="20" {...props}><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" /></svg>) }
+function IconStar(props) { return (<svg viewBox="0 0 24 24" width="16" height="16" {...props}><path fill="currentColor" d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.62L12 2 9.19 8.62 2 9.24l5.46 4.73L5.82 21z" /></svg>) }
+function IconUsers(props) { return (<svg viewBox="0 0 24 24" width="16" height="16" {...props}><path fill="currentColor" d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0C9.66 11 11 9.66 11 8S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5C18 14.17 13.33 13 11 13zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5C26 14.17 21.33 13 19 13z" /></svg>) }
+function IconClock(props) { return (<svg viewBox="0 0 24 24" width="16" height="16" {...props}><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm.5 5H11v6l5.25 3.15.75-1.23-4.5-2.67V7z" /></svg>) }
+function IconBook(props) { return (<svg viewBox="0 0 24 24" width="20" height="20" {...props}><path fill="currentColor" d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z" /></svg>) }
+function IconChevronDown(props) { return (<svg viewBox="0 0 24 24" width="20" height="20" {...props}><path fill="currentColor" d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" /></svg>) }
+function IconGlobe(props) { return (<svg viewBox="0 0 24 24" width="20" height="20" {...props}><path fill="currentColor" d="M12 2C6.47 2 2 6.48 2 12s4.47 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z" /></svg>) }
+function IconCertificate(props) { return (<svg viewBox="0 0 24 24" width="20" height="20" {...props}><path fill="currentColor" d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9h-4v4h-2v-4H9V9h4V5h2v4h4v2z" /></svg>) }
+function IconCheckCircle(props) { return (<svg viewBox="0 0 24 24" width="20" height="20" {...props}><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" /></svg>) }
+function IconPlayCircle(props) { return (<svg viewBox="0 0 24 24" width="20" height="20" {...props}><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" /></svg>) }
 
 export default function CourseDetails({ course: courseProp, onBack }) {
   const { id: idParam } = useParams();
@@ -27,8 +28,8 @@ export default function CourseDetails({ course: courseProp, onBack }) {
   const [showToast, setShowToast] = useState(false);
 
   const defaultCurriculum = [
-    { id: 1, title: "Getting Started", description: "First steps and setup", topics: [{ title: "Introduction & goals", duration: "8m" }, { title: "Tools & environment", duration: "14m" }]},
-    { id: 2, title: "Core Concepts", description: "Build real understanding", topics: [{ title: "Key primitives", duration: "18m" }, { title: "Project walkthrough", duration: "22m" }]}
+    { id: 1, title: "Getting Started", description: "First steps and setup", topics: [{ id: 1, title: "Introduction & goals", duration: "8m" }, { id: 2, title: "Tools & environment", duration: "14m" }] },
+    { id: 2, title: "Core Concepts", description: "Build real understanding", topics: [{ id: 3, title: "Key primitives", duration: "18m" }, { id: 4, title: "Project walkthrough", duration: "22m" }] }
   ];
 
   const resolveInstructor = () => {
@@ -121,6 +122,9 @@ export default function CourseDetails({ course: courseProp, onBack }) {
     setShowToast(true);
     setTimeout(() => navigate("/enrollments"), 1200);
   };
+
+  // Get the first lesson ID for "Start Learning" button
+  const firstLessonId = courseData.curriculum?.[0]?.topics?.[0]?.id || 1;
 
   useEffect(() => {
     if (showToast) {
@@ -229,9 +233,19 @@ export default function CourseDetails({ course: courseProp, onBack }) {
                 {canEnroll ? (
                   <>
                     {isEnrolled ? (
-                      <button disabled className="w-full inline-flex justify-center items-center gap-2 px-6 py-3 bg-green-100 text-green-700 rounded-lg font-semibold cursor-not-allowed border border-green-300">
-                        <span>✅</span>Already Enrolled
-                      </button>
+                      <>
+                        <button disabled className="w-full inline-flex justify-center items-center gap-2 px-6 py-3 bg-green-100 text-green-700 rounded-lg font-semibold cursor-not-allowed border border-green-300">
+                          <span>✅</span>Already Enrolled
+                        </button>
+                        {/* START LEARNING BUTTON - NEW */}
+                        <Link
+                          to={`/courses/${courseData.id}/learn/${firstLessonId}`}
+                          className="w-full inline-flex justify-center items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition shadow-lg hover:shadow-xl"
+                        >
+                          <IconPlayCircle />
+                          Start Learning
+                        </Link>
+                      </>
                     ) : (
                       <button onClick={handleEnroll} className="w-full inline-flex justify-center px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition shadow-lg hover:shadow-xl">
                         Enroll Now
