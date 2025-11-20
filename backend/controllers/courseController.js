@@ -1,4 +1,5 @@
 // controllers/courseController.js
+import mongoose from 'mongoose';
 import Course from '../models/Course.js';
 import User from '../models/User.js';
 
@@ -71,7 +72,7 @@ export const createCourse = async (req, res, next) => {
       image: image || '',
       curriculum: curriculum || [],
       learningPoints: learningPoints || [],
-      createdBy: req.user.id,
+      createdBy: new mongoose.Types.ObjectId(req.user.id),
     });
 
     const populatedCourse = await Course.findById(course._id).populate('createdBy', 'name email');
@@ -93,7 +94,7 @@ export const updateCourse = async (req, res, next) => {
     }
 
     // Check if user is the creator of the course
-    if (course.createdBy.toString() !== req.user.id) {
+    if (String(course.createdBy) !== String(req.user.id)) {
       return res.status(403).json({ message: 'Not authorized to update this course' });
     }
 
@@ -152,7 +153,7 @@ export const deleteCourse = async (req, res, next) => {
     }
 
     // Check if user is the creator of the course
-    if (course.createdBy.toString() !== req.user.id) {
+    if (String(course.createdBy) !== String(req.user.id)) {
       return res.status(403).json({ message: 'Not authorized to delete this course' });
     }
 

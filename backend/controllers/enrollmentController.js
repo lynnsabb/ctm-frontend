@@ -37,8 +37,8 @@ export const createEnrollment = async (req, res, next) => {
 
     // Create enrollment
     const enrollment = await Enrollment.create({
-      userId,
-      courseId,
+      userId: new mongoose.Types.ObjectId(userId),
+      courseId: new mongoose.Types.ObjectId(courseId),
       progress: Math.max(0, Math.min(100, progress)),
       completed,
       completedLessons: Math.max(0, completedLessons),
@@ -72,7 +72,7 @@ export const getAllEnrollments = async (req, res, next) => {
       query.userId = userId;
     } else if (userRole === 'instructor') {
       // Instructors see enrollments for courses they created
-      const instructorCourses = await Course.find({ createdBy: userId }).select('_id');
+      const instructorCourses = await Course.find({ createdBy: new mongoose.Types.ObjectId(userId) }).select('_id');
       const courseIds = instructorCourses.map(c => c._id);
       query.courseId = { $in: courseIds };
     }
@@ -103,7 +103,7 @@ export const getEnrollmentsByStudent = async (req, res, next) => {
 
     // Students can only see their own enrollments
     // Instructors can see any student's enrollments
-    if (userRole === 'student' && studentId !== userId) {
+    if (userRole === 'student' && String(studentId) !== String(userId)) {
       return res.status(403).json({ message: 'Not authorized to view other students\' enrollments' });
     }
 
@@ -138,7 +138,7 @@ export const updateEnrollment = async (req, res, next) => {
     }
 
     // Students can only update their own enrollments
-    if (enrollment.userId.toString() !== userId) {
+    if (String(enrollment.userId) !== String(userId)) {
       return res.status(403).json({ message: 'Not authorized to update this enrollment' });
     }
 
@@ -189,10 +189,10 @@ export const deleteEnrollment = async (req, res, next) => {
 
     // Students can only delete their own enrollments
     // Instructors can delete enrollments for their courses
-    if (enrollment.userId.toString() !== userId) {
+    if (String(enrollment.userId) !== String(userId)) {
       // Check if user is instructor and owns the course
       const course = await Course.findById(enrollment.courseId);
-      if (!course || course.createdBy.toString() !== userId) {
+      if (!course || String(course.createdBy) !== String(userId)) {
         return res.status(403).json({ message: 'Not authorized to delete this enrollment' });
       }
     }

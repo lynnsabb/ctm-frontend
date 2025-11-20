@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Protected from "./components/Protected.jsx";
 
 import Home from "./pages/Home";
@@ -10,19 +10,34 @@ import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
-
+import LessonViewer from "./pages/LessonViewer";
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
 
 export default function App() {
+  const location = useLocation();
+
+  // Hide Navbar and Footer on lesson viewer page
+  const isLessonPage = location.pathname.includes('/learn/');
+
   return (
     <div className="min-h-screen flex flex-col bg-white text-gray-900">
-      <Navbar />
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-8">
+      {!isLessonPage && <Navbar />}
+      <main className={`flex-1 ${!isLessonPage ? 'max-w-7xl mx-auto w-full px-4 py-8' : ''}`}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/courses" element={<Courses />} />
           <Route path="/courses/:id" element={<CourseDetails />} />
+
+          {/* Lesson Viewer - Full Screen */}
+          <Route
+            path="/courses/:id/learn/:lessonId"
+            element={
+              <Protected role="student">
+                <LessonViewer />
+              </Protected>
+            }
+          />
 
           {/* Only logged-in students */}
           <Route
@@ -61,7 +76,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/404" replace />} />
         </Routes>
       </main>
-      <Footer />
+      {!isLessonPage && <Footer />}
     </div>
   );
 }
