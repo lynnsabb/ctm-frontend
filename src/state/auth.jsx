@@ -25,13 +25,14 @@ export function AuthProvider({ children }) {
   };
 
   const value = {
-    user,
-    isAuthenticated: !!user,
-    login,
-    logout,
-  };
+  user,
+  isAuthenticated: !!user, 
+  login,
+  logout,
+};
 
-  return <AuthCtx.Provider value={value}>{children}</AuthCtx.Provider>;
+return <AuthCtx.Provider value={value}>{children}</AuthCtx.Provider>;
+
 }
 
 export const useAuth = () => useContext(AuthCtx);

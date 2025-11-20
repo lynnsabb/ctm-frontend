@@ -1,6 +1,5 @@
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Protected from "./components/Protected.jsx";
-
 import Home from "./pages/Home";
 import Courses from "./pages/Courses";
 import CourseDetails from "./pages/CourseDetails";
@@ -39,7 +38,6 @@ export default function App() {
             }
           />
 
-          {/* Only logged-in students */}
           <Route
             path="/enrollments"
             element={
@@ -48,8 +46,6 @@ export default function App() {
               </Protected>
             }
           />
-
-          {/* Only logged-in users (any role) */}
           <Route
             path="/profile"
             element={
@@ -58,8 +54,6 @@ export default function App() {
               </Protected>
             }
           />
-
-          {/* Only instructors */}
           <Route
             path="/manage"
             element={
@@ -68,10 +62,8 @@ export default function App() {
               </Protected>
             }
           />
-
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-
           <Route path="/404" element={<NotFound />} />
           <Route path="*" element={<Navigate to="/404" replace />} />
         </Routes>

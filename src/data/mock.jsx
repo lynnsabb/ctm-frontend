@@ -9,9 +9,6 @@ export const mockCourses = [
     rating: 4.6,
     students: 3421,
     duration: '20h',
-<<<<<<< HEAD
-    image: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=800&h=400&fit=crop'
-=======
     image: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=800&h=400&fit=crop',
     curriculum: [
       {
@@ -57,7 +54,6 @@ export const mockCourses = [
         ]
       }
     ]
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
   },
   {
     id: 2,
@@ -69,9 +65,6 @@ export const mockCourses = [
     rating: 4.7,
     students: 2103,
     duration: '35h',
-<<<<<<< HEAD
-    image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=400&fit=crop'
-=======
     image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=400&fit=crop',
     curriculum: [
       {
@@ -117,7 +110,6 @@ export const mockCourses = [
         ]
       }
     ]
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
   },
   {
     id: 3,
@@ -129,9 +121,6 @@ export const mockCourses = [
     rating: 4.8,
     students: 1567,
     duration: '30h',
-<<<<<<< HEAD
-    image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=400&fit=crop'
-=======
     image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=400&fit=crop',
     curriculum: [
       {
@@ -177,7 +166,6 @@ export const mockCourses = [
         ]
       }
     ]
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
   },
   {
     id: 4,
@@ -189,9 +177,6 @@ export const mockCourses = [
     rating: 4.9,
     students: 4832,
     duration: '45h',
-<<<<<<< HEAD
-    image: 'https://images.unsplash.com/photo-1547658719-da2b51169166?w=800&h=400&fit=crop'
-=======
     image: 'https://images.unsplash.com/photo-1547658719-da2b51169166?w=800&h=400&fit=crop',
     curriculum: [
       {
@@ -237,7 +222,6 @@ export const mockCourses = [
         ]
       }
     ]
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
   },
   {
     id: 5,
@@ -249,9 +233,6 @@ export const mockCourses = [
     rating: 4.5,
     students: 2890,
     duration: '25h',
-<<<<<<< HEAD
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop'
-=======
     image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop',
     curriculum: [
       {
@@ -297,7 +278,6 @@ export const mockCourses = [
         ]
       }
     ]
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
   },
   {
     id: 6,
@@ -309,9 +289,6 @@ export const mockCourses = [
     rating: 4.4,
     students: 1923,
     duration: '18h',
-<<<<<<< HEAD
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop'
-=======
     image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop',
     curriculum: [
       {
@@ -357,7 +334,6 @@ export const mockCourses = [
         ]
       }
     ]
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
   },
   {
     id: 7,
@@ -369,9 +345,6 @@ export const mockCourses = [
     rating: 4.8,
     students: 3200,
     duration: '28h',
-<<<<<<< HEAD
-    image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&h=400&fit=crop'
-=======
     image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&h=400&fit=crop',
     curriculum: [
       {
@@ -417,7 +390,6 @@ export const mockCourses = [
         ]
       }
     ]
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
   },
   {
     id: 8,
@@ -429,9 +401,6 @@ export const mockCourses = [
     rating: 4.7,
     students: 2750,
     duration: '32h',
-<<<<<<< HEAD
-    image: 'https://images.unsplash.com/photo-1618401479427-c8ef9465fbe1?w=800&h=400&fit=crop'
-=======
     image: 'https://images.unsplash.com/photo-1618401479427-c8ef9465fbe1?w=800&h=400&fit=crop',
     curriculum: [
       {
@@ -477,7 +446,6 @@ export const mockCourses = [
         ]
       }
     ]
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
   },
   {
     id: 9,
@@ -489,9 +457,6 @@ export const mockCourses = [
     rating: 4.6,
     students: 2100,
     duration: '22h',
-<<<<<<< HEAD
-    image: 'https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=800&h=400&fit=crop'
-=======
     image: 'https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=800&h=400&fit=crop',
     curriculum: [
       {
@@ -537,7 +502,6 @@ export const mockCourses = [
         ]
       }
     ]
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
   },
   {
     id: 10,
@@ -549,9 +513,6 @@ export const mockCourses = [
     rating: 4.9,
     students: 1800,
     duration: '26h',
-<<<<<<< HEAD
-    image: 'https://images.unsplash.com/photo-1605745341112-85968b19335b?w=800&h=400&fit=crop'
-=======
     image: 'https://images.unsplash.com/photo-1605745341112-85968b19335b?w=800&h=400&fit=crop',
     curriculum: [
       {
@@ -597,7 +558,6 @@ export const mockCourses = [
         ]
       }
     ]
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
   },
   {
     id: 11,
@@ -609,9 +569,6 @@ export const mockCourses = [
     rating: 4.5,
     students: 5600,
     duration: '24h',
-<<<<<<< HEAD
-    image: 'https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?w=800&h=400&fit=crop'
-=======
     image: 'https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?w=800&h=400&fit=crop',
     curriculum: [
       {
@@ -657,7 +614,6 @@ export const mockCourses = [
         ]
       }
     ]
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
   },
   {
     id: 12,
@@ -669,9 +625,6 @@ export const mockCourses = [
     rating: 4.8,
     students: 1500,
     duration: '40h',
-<<<<<<< HEAD
-    image: 'https://images.unsplash.com/photo-1561557944-6e7860d1a7eb?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687'
-=======
     image: 'https://images.unsplash.com/photo-1561557944-6e7860d1a7eb?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687',
     curriculum: [
       {
@@ -717,7 +670,6 @@ export const mockCourses = [
         ]
       }
     ]
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
   },
   {
     id: 13,
@@ -729,9 +681,6 @@ export const mockCourses = [
     rating: 4.7,
     students: 2400,
     duration: '16h',
-<<<<<<< HEAD
-    image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&h=400&fit=crop'
-=======
     image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&h=400&fit=crop',
     curriculum: [
       {
@@ -777,7 +726,6 @@ export const mockCourses = [
         ]
       }
     ]
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
   },
   {
     id: 14,
@@ -789,9 +737,6 @@ export const mockCourses = [
     rating: 4.6,
     students: 1950,
     duration: '20h',
-<<<<<<< HEAD
-    image: 'https://images.unsplash.com/photo-1542744173-05336fcc7ad4?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1102'
-=======
     image: 'https://images.unsplash.com/photo-1542744173-05336fcc7ad4?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1102',
     curriculum: [
       {
@@ -837,7 +782,6 @@ export const mockCourses = [
         ]
       }
     ]
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
   },
   {
     id: 15,
@@ -849,9 +793,6 @@ export const mockCourses = [
     rating: 4.7,
     students: 2200,
     duration: '30h',
-<<<<<<< HEAD
-    image: 'https://images.unsplash.com/photo-1593720213428-28a5b9e94613?w=800&h=400&fit=crop'
-=======
     image: 'https://images.unsplash.com/photo-1593720213428-28a5b9e94613?w=800&h=400&fit=crop',
     curriculum: [
       {
@@ -897,7 +838,6 @@ export const mockCourses = [
         ]
       }
     ]
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
   },
   {
     id: 16,
@@ -909,9 +849,6 @@ export const mockCourses = [
     rating: 4.6,
     students: 1600,
     duration: '24h',
-<<<<<<< HEAD
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop'
-=======
     image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop',
     curriculum: [
       {
@@ -957,7 +894,6 @@ export const mockCourses = [
         ]
       }
     ]
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
   },
   {
     id: 17,
@@ -969,9 +905,6 @@ export const mockCourses = [
     rating: 4.4,
     students: 1800,
     duration: '28h',
-<<<<<<< HEAD
-    image: 'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=800&h=400&fit=crop'
-=======
     image: 'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=800&h=400&fit=crop',
     curriculum: [
       {
@@ -1017,7 +950,6 @@ export const mockCourses = [
         ]
       }
     ]
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
   },
   {
     id: 18,
@@ -1029,9 +961,6 @@ export const mockCourses = [
     rating: 4.8,
     students: 2100,
     duration: '35h',
-<<<<<<< HEAD
-    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=400&fit=crop'
-=======
     image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=400&fit=crop',
     curriculum: [
       {
@@ -1077,7 +1006,6 @@ export const mockCourses = [
         ]
       }
     ]
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
   },
   {
     id: 19,
@@ -1089,9 +1017,6 @@ export const mockCourses = [
     rating: 4.7,
     students: 3100,
     duration: '27h',
-<<<<<<< HEAD
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop'
-=======
     image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop',
     curriculum: [
       {
@@ -1137,7 +1062,6 @@ export const mockCourses = [
         ]
       }
     ]
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
   },
   {
     id: 20,
@@ -1149,9 +1073,6 @@ export const mockCourses = [
     rating: 4.5,
     students: 2600,
     duration: '15h',
-<<<<<<< HEAD
-    image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&h=400&fit=crop'
-=======
     image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&h=400&fit=crop',
     curriculum: [
       {
@@ -1197,7 +1118,6 @@ export const mockCourses = [
         ]
       }
     ]
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
   },
   {
     id: 21,
@@ -1209,9 +1129,6 @@ export const mockCourses = [
     rating: 4.6,
     students: 1900,
     duration: '21h',
-<<<<<<< HEAD
-    image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=400&fit=crop'
-=======
     image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=400&fit=crop',
     curriculum: [
       {
@@ -1257,7 +1174,6 @@ export const mockCourses = [
         ]
       }
     ]
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
   },
   {
     id: 22,
@@ -1269,9 +1185,6 @@ export const mockCourses = [
     rating: 4.7,
     students: 1400,
     duration: '29h',
-<<<<<<< HEAD
-    image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&h=400&fit=crop'
-=======
     image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&h=400&fit=crop',
     curriculum: [
       {
@@ -1317,27 +1230,17 @@ export const mockCourses = [
         ]
       }
     ]
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
   }
 ];
 
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
 export const courses = [
   {
     id: 'react-101',
     title: 'React 101',
     level: 'Beginner',
     category: 'Frontend',
-<<<<<<< HEAD
-    description: 'Learn React fundamentals: components, props, state, effects.',
-=======
     description: 'Learn React fundamentals: components, props, state, and effects.',
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
     instructor: 'Jane Doe',
     modules: [
       {
@@ -1349,27 +1252,7 @@ export const courses = [
       {
         id: 'm2', title: 'Core Concepts', lessons: [
           { id: 'l3', title: 'Props & State' },
-<<<<<<< HEAD
-          { id: 'l4', title: 'useEffect basics' },
-        ]
-      },
-    ],
-  },
-  {
-    id: 'ts-essentials',
-    title: 'TypeScript Essentials',
-    level: 'Intermediate',
-    category: 'Language',
-    description: 'Practical TS types, interfaces, generics, React with TS.',
-    instructor: 'John Smith',
-    modules: [
-      {
-        id: 'm1', title: 'Types Everywhere', lessons: [
-          { id: 'l1', title: 'Primitives & Objects' },
-          { id: 'l2', title: 'Functions & Generics' },
-=======
           { id: 'l4', title: 'useEffect Basics' },
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
         ]
       },
     ],
@@ -1384,23 +1267,15 @@ export const courses = [
     modules: [
       {
         id: 'm1', title: 'Intro', lessons: [
-<<<<<<< HEAD
-          { id: 'l1', title: 'Node runtime' },
-          { id: 'l2', title: 'Express basics' },
-=======
           { id: 'l1', title: 'Node Runtime' },
           { id: 'l2', title: 'Express Basics' },
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
         ]
       },
     ],
   },
 ];
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
 // ====== Demo users + roles (Phase 1 mock auth) ======
 export const users = [
   { id: 'u1', name: 'Student One', email: 'student1@example.com', password: '123456', role: 'student' },
@@ -1545,48 +1420,6 @@ export function unmarkCourseCompleted(courseId) {
 export const instructors = [
   {
     id: 1,
-<<<<<<< HEAD
-    name: 'Emma Thompson',
-    specialty: 'Python & Programming',
-    yearsOfExperience: 8,
-    photo: 'https://i.pravatar.cc/150?img=12',
-    bio: 'Experienced software engineer and educator passionate about making programming accessible.',
-    courses: 12,
-    students: 15000
-  },
-  {
-    id: 2,
-    name: 'Dr. Liam Carter',
-    specialty: 'Machine Learning & AI',
-    yearsOfExperience: 12,
-    photo: 'https://i.pravatar.cc/150?img=13',
-    bio: 'PhD in Computer Science with extensive research in machine learning and data science.',
-    courses: 8,
-    students: 8500
-  },
-  {
-    id: 3,
-    name: 'Sophia Miller',
-    specialty: 'UI/UX Design',
-    yearsOfExperience: 10,
-    photo: 'https://i.pravatar.cc/150?img=47',
-    bio: 'Award-winning designer with expertise in creating intuitive and beautiful user experiences.',
-    courses: 15,
-    students: 12000
-  },
-  {
-    id: 4,
-    name: 'Ethan Williams',
-    specialty: 'Web Development',
-    yearsOfExperience: 9,
-    photo: 'https://i.pravatar.cc/150?img=32',
-    bio: 'Full-stack developer and educator specializing in modern web technologies.',
-    courses: 18,
-    students: 20000
-  }
-];
-
-=======
     name: "Emma Thompson",
     specialty: "Python & Programming",
     yearsOfExperience: 8,
@@ -1638,7 +1471,6 @@ export const instructors = [
 
 
 
->>>>>>> 8664c9903c9e5eb83bdfd6c1cad3899b3d2927fc
 // ====== Mock testimonials data ======
 export const testimonials = [
   {

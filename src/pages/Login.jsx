@@ -16,9 +16,10 @@ export default function Login() {
     if (!email || !pwd) return setErr("Please enter both email and password.");
 
     const ok = await login(email, pwd);
-    if (!ok) {
-      return setErr("Invalid credentials. Try student1@example.com / 123456 or instructor1@example.com / 123456");
-    }
+    if (!ok)
+      return setErr(
+        "Invalid credentials. Try student1@example.com / 123456 or instructor1@example.com / 123456"
+      );
 
     const user = JSON.parse(localStorage.getItem("ctms_user"));
     if (user?.role === "student") nav("/enrollments");
@@ -32,7 +33,11 @@ export default function Login() {
         <div className="w-full max-w-lg rounded-2xl border bg-white shadow-sm p-6">
           {/* Logo and Title */}
           <div className="flex items-center gap-3 mb-4">
-            <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg border">🎓</span>
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/4431/4431898.png"
+              alt="LearnHub Logo"
+              className="w-10 h-10 object-contain rounded-lg"
+            />
             <div className="text-xl font-semibold">LearnHub</div>
           </div>
 
@@ -43,7 +48,10 @@ export default function Login() {
 
           <form onSubmit={onSubmit} className="mt-6 space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium mb-1">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium mb-1"
+              >
                 Email
               </label>
               <input
@@ -58,10 +66,16 @@ export default function Login() {
 
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label htmlFor="password" className="block text-sm font-medium">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium"
+                >
                   Password
                 </label>
-                <a href="#" className="text-sm text-gray-600 hover:underline">
+                <a
+                  href="#"
+                  className="text-sm text-gray-600 hover:underline"
+                >
                   Forgot password?
                 </a>
               </div>
@@ -91,9 +105,15 @@ export default function Login() {
               Demo accounts
             </div>
             <div className="rounded-xl bg-gray-50 p-3 space-y-1">
-              <div>Student: <code>student1@example.com</code></div>
-              <div>Instructor: <code>instructor1@example.com</code></div>
-              <div>Password: <code>123456</code></div>
+              <div>
+                Student: <code>student1@example.com</code>
+              </div>
+              <div>
+                Instructor: <code>instructor1@example.com</code>
+              </div>
+              <div>
+                Password: <code>123456</code>
+              </div>
             </div>
           </div>
 
