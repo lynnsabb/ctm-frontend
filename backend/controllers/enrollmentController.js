@@ -58,6 +58,23 @@ export const createEnrollment = async (req, res, next) => {
   }
 };
 
+// GET /api/enrollments/me - Get current user's enrollments
+export const getMyEnrollments = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+
+    // Get only enrollments for the authenticated user
+    const enrollments = await Enrollment.find({ userId: new mongoose.Types.ObjectId(userId) })
+      .populate('courseId', 'title description instructor category level duration image rating students curriculum')
+      .sort({ createdAt: -1 });
+
+    res.json(enrollments);
+  } catch (error) {
+    console.error('Get my enrollments error:', error);
+    next(error);
+  }
+};
+
 // GET /api/enrollments - Get all enrollments (for authenticated user)
 export const getAllEnrollments = async (req, res, next) => {
   try {

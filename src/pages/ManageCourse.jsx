@@ -1,5 +1,6 @@
-import { useState, useMemo } from "react";
-import { mockCourses as initialCourses } from "../data/mock";
+import { useState, useMemo, useEffect } from "react";
+import axios from "axios";
+import { useAuth } from "../state/auth.jsx";
 
 // Icon components
 function IconPlus(props) {
@@ -116,7 +117,10 @@ const mapModulesToCurriculum = (modules = []) =>
 // ---------- component ----------
 
 export default function ManageCourse() {
-  const [courses, setCourses] = useState(initialCourses);
+  const { user } = useAuth();
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -124,6 +128,60 @@ export default function ManageCourse() {
   const [courseToDelete, setCourseToDelete] = useState(null);
   const [editingCourse, setEditingCourse] = useState(null);
   const [toast, setToast] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Check if user is instructor
+  useEffect(() => {
+    if (user && user.role !== "instructor") {
+      setError("Access denied: This page is only available to instructors.");
+      setLoading(false);
+    }
+  }, [user]);
+
+  // Fetch courses from API
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        setLoading(true);
+        setError("");
+        
+        const token = localStorage.getItem("ctm_token");
+        if (!token) {
+          setError("Please log in to manage courses");
+          setLoading(false);
+          return;
+        }
+
+        // Fetch all courses, then filter to only instructor's courses
+        const response = await axios.get("http://localhost:5000/api/courses", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        // Filter to only courses created by this instructor
+        const instructorCourses = response.data.filter(
+          (course) => course.createdBy && String(course.createdBy._id || course.createdBy) === String(user?._id)
+        );
+
+        setCourses(instructorCourses);
+      } catch (err) {
+        if (err.response && err.response.data) {
+          setError(err.response.data.message || "Failed to load courses");
+        } else if (err.request) {
+          setError("Unable to connect to server. Please check if the backend is running.");
+        } else {
+          setError("An unexpected error occurred. Please try again.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user && user.role === "instructor") {
+      fetchCourses();
+    }
+  }, [user]);
 
   // form state (uses "modules", not "curriculum")
   const [formData, setFormData] = useState({
@@ -131,7 +189,6 @@ export default function ManageCourse() {
     category: "Programming",
     level: "Beginner",
     description: "",
-    instructor: "",
     duration: "",
     image: "",
     rating: 4.5,
@@ -157,10 +214,10 @@ export default function ManageCourse() {
       const q = searchQuery.toLowerCase();
       filtered = filtered.filter(
         (c) =>
-          c.title.toLowerCase().includes(q) ||
-          c.description.toLowerCase().includes(q) ||
-          c.instructor.toLowerCase().includes(q) ||
-          c.category.toLowerCase().includes(q)
+          c.title?.toLowerCase().includes(q) ||
+          c.description?.toLowerCase().includes(q) ||
+          (typeof c.instructor === "string" ? c.instructor.toLowerCase() : c.instructor?.name?.toLowerCase() || "").includes(q) ||
+          c.category?.toLowerCase().includes(q)
       );
     }
 
@@ -180,7 +237,6 @@ export default function ManageCourse() {
       category: "Programming",
       level: "Beginner",
       description: "",
-      instructor: "",
       duration: "",
       image: "",
       rating: 4.5,
@@ -204,10 +260,6 @@ export default function ManageCourse() {
       category: course.category || "Programming",
       level: course.level || "Beginner",
       description: course.description || "",
-      instructor:
-        typeof course.instructor === "string"
-          ? course.instructor
-          : course.instructor?.name || "",
       duration: course.duration || "",
       image: course.image || "",
       rating: course.rating || 4.5,
@@ -300,35 +352,76 @@ export default function ManageCourse() {
   };
 
   // submit: map modules -> curriculum before saving
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
 
-    const curriculum = mapModulesToCurriculum(formData.modules);
+    try {
+      const token = localStorage.getItem("ctm_token");
+      if (!token) {
+        showToast("❌ Please log in to save courses", "error");
+        setSubmitting(false);
+        return;
+      }
 
-    if (editingCourse) {
-      setCourses((prev) =>
-        prev.map((c) =>
-          c.id === editingCourse.id
-            ? {
-              ...c,
-              ...formData,
-              curriculum, // keep rest of app happy
-            }
-            : c
-        )
-      );
-      showToast("✅ Course updated successfully", "success");
-    } else {
-      const newCourse = {
-        id: Date.now(),
-        ...formData,
-        curriculum,
+      const curriculum = mapModulesToCurriculum(formData.modules);
+      const courseData = {
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        level: formData.level,
+        duration: formData.duration,
+        rating: formData.rating || 0,
+        students: formData.students || 0,
+        image: formData.image,
+        curriculum: curriculum,
+        learningPoints: [], // Can be added later if needed
       };
-      setCourses((prev) => [newCourse, ...prev]);
-      showToast("✅ Course added successfully", "success");
-    }
 
-    handleCloseModal();
+      if (editingCourse) {
+        // Update existing course
+        const response = await axios.put(
+          `http://localhost:5000/api/courses/${editingCourse._id}`,
+          courseData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setCourses((prev) =>
+          prev.map((c) => (c._id === editingCourse._id ? response.data : c))
+        );
+        showToast("✅ Course updated successfully", "success");
+      } else {
+        // Create new course
+        const response = await axios.post(
+          "http://localhost:5000/api/courses",
+          courseData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setCourses((prev) => [response.data, ...prev]);
+        showToast("✅ Course added successfully", "success");
+      }
+
+      handleCloseModal();
+    } catch (err) {
+      if (err.response && err.response.data) {
+        showToast(`❌ ${err.response.data.message || "Failed to save course"}`, "error");
+      } else if (err.request) {
+        showToast("❌ Unable to connect to server", "error");
+      } else {
+        showToast("❌ An unexpected error occurred", "error");
+      }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleDeleteClick = (course) => {
@@ -336,13 +429,45 @@ export default function ManageCourse() {
     setIsDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = () => {
-    if (courseToDelete) {
-      setCourses((prev) => prev.filter((c) => c.id !== courseToDelete.id));
-      showToast("✅ Course deleted successfully", "success");
+  const handleConfirmDelete = async () => {
+    if (!courseToDelete) {
+      setIsDeleteModalOpen(false);
+      setCourseToDelete(null);
+      return;
     }
-    setIsDeleteModalOpen(false);
-    setCourseToDelete(null);
+
+    try {
+      const token = localStorage.getItem("ctm_token");
+      if (!token) {
+        showToast("❌ Please log in to delete courses", "error");
+        setIsDeleteModalOpen(false);
+        setCourseToDelete(null);
+        return;
+      }
+
+      await axios.delete(
+        `http://localhost:5000/api/courses/${courseToDelete._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setCourses((prev) => prev.filter((c) => c._id !== courseToDelete._id));
+      showToast("✅ Course deleted successfully", "success");
+    } catch (err) {
+      if (err.response && err.response.data) {
+        showToast(`❌ ${err.response.data.message || "Failed to delete course"}`, "error");
+      } else if (err.request) {
+        showToast("❌ Unable to connect to server", "error");
+      } else {
+        showToast("❌ An unexpected error occurred", "error");
+      }
+    } finally {
+      setIsDeleteModalOpen(false);
+      setCourseToDelete(null);
+    }
   };
 
   const handleCancelDelete = () => {
@@ -406,12 +531,34 @@ export default function ManageCourse() {
           </div>
         </header>
 
+        {/* Loading state */}
+        {loading && (
+          <div className="text-center py-16 bg-white rounded-xl border border-gray-200">
+            <div className="text-5xl mb-3">⏳</div>
+            <p className="text-gray-500 text-lg">Loading courses...</p>
+          </div>
+        )}
+
+        {/* Error state */}
+        {error && !loading && (
+          <div className="text-center py-16 bg-white rounded-xl border border-red-200">
+            <div className="text-5xl mb-3">⚠️</div>
+            <p className="text-red-600 text-lg mb-4">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="inline-flex items-center justify-center rounded-xl bg-black text-white px-4 py-2 hover:bg-black/90"
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
         {/* Courses grid */}
-        {filteredCourses.length > 0 ? (
+        {!loading && !error && filteredCourses.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCourses.map((course) => (
               <div
-                key={course.id}
+                key={course._id}
                 className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
               >
                 <div className="relative h-48 overflow-hidden bg-gradient-to-br from-purple-100 to-blue-100">
@@ -491,7 +638,7 @@ export default function ManageCourse() {
               </div>
             ))}
           </div>
-        ) : (
+        ) : !loading && !error ? (
           <div className="text-center py-16 bg-white rounded-xl border border-gray-200">
             <p className="text-gray-500 text-lg mb-2">No courses found</p>
             <p className="text-gray-400 text-sm">
@@ -500,7 +647,7 @@ export default function ManageCourse() {
                 : "Start by adding your first course!"}
             </p>
           </div>
-        )}
+        ) : null}
 
         {/* Add/Edit Modal */}
         {isModalOpen && (
@@ -525,6 +672,11 @@ export default function ManageCourse() {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
+                {submitting && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-700">
+                    {editingCourse ? "Updating course..." : "Creating course..."}
+                  </div>
+                )}
                 {/* basic fields */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -581,36 +733,19 @@ export default function ManageCourse() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Instructor *
-                    </label>
-                    <input
-                      type="text"
-                      name="instructor"
-                      value={formData.instructor}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="e.g., Jane Doe"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Duration *
-                    </label>
-                    <input
-                      type="text"
-                      name="duration"
-                      value={formData.duration}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="e.g., 20h"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Duration *
+                  </label>
+                  <input
+                    type="text"
+                    name="duration"
+                    value={formData.duration}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="e.g., 20h"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

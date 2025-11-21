@@ -3,6 +3,7 @@ import express from 'express';
 import {
   createEnrollment,
   getAllEnrollments,
+  getMyEnrollments,
   getEnrollmentsByStudent,
   updateEnrollment,
   deleteEnrollment,
@@ -22,6 +23,13 @@ router.use(authMiddleware);
  * @access  Private (Student only)
  */
 router.post('/', requireStudent, createEnrollment);
+
+/**
+ * @route   GET /api/enrollments/me
+ * @desc    Get current user's enrollments (student's own enrollments)
+ * @access  Private
+ */
+router.get('/me', getMyEnrollments);
 
 /**
  * @route   GET /api/enrollments

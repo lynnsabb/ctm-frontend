@@ -1,30 +1,73 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../state/auth.jsx";
+import axios from "axios";
 
 export default function Login() {
   const nav = useNavigate();
-  const { login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
   const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const onSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setErr("");
-    if (!email || !pwd) return setErr("Please enter both email and password.");
+    setLoading(true);
 
-    const ok = await login(email, pwd);
-    if (!ok)
-      return setErr(
-        "Invalid credentials. Try student1@example.com / 123456 or instructor1@example.com / 123456"
+    // Validate form fields
+    if (!email || !pwd) {
+      setErr("Please enter both email and password.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        { email, password: pwd }
       );
 
-    const user = JSON.parse(localStorage.getItem("ctms_user"));
-    if (user?.role === "student") nav("/enrollments");
-    else if (user?.role === "instructor") nav("/manage");
-    else nav("/profile");
+      // Login successful
+      if (res.data.token) {
+        // Store token in localStorage
+        localStorage.setItem("ctm_token", res.data.token);
+      }
+
+      // Store user data if provided
+      if (res.data.user) {
+        localStorage.setItem("ctms_user", JSON.stringify(res.data.user));
+        
+        // Trigger storage event to update auth context
+        window.dispatchEvent(new Event("storage"));
+      }
+
+      // Redirect based on user role
+      const user = res.data.user;
+      if (user?.role === "student") {
+        nav("/enrollments");
+      } else if (user?.role === "instructor") {
+        nav("/manage");
+      } else {
+        nav("/profile");
+      }
+    } catch (err) {
+      // Handle error response
+      if (err.response && err.response.data) {
+        // Backend returned an error message
+        const errorMessage = err.response.data.message || 
+                            err.response.data.error || 
+                            "Login failed. Please check your credentials.";
+        setErr(errorMessage);
+      } else if (err.request) {
+        // Request was made but no response received
+        setErr("Unable to connect to server. Please check if the backend is running.");
+      } else {
+        // Something else happened
+        setErr("An unexpected error occurred. Please try again.");
+      }
+      setLoading(false);
+    }
   };
 
   return (
@@ -46,7 +89,7 @@ export default function Login() {
             Enter your credentials to access your account
           </p>
 
-          <form onSubmit={onSubmit} className="mt-6 space-y-4">
+          <form onSubmit={handleLogin} className="mt-6 space-y-4">
             <div>
               <label
                 htmlFor="email"
@@ -95,27 +138,14 @@ export default function Login() {
               </div>
             )}
 
-            <button className="w-full rounded-xl bg-black text-white py-2.5 hover:bg-black/90">
-              Sign in
+            <button 
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-xl bg-black text-white py-2.5 hover:bg-black/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? "Signing in..." : "Sign in"}
             </button>
           </form>
-
-          <div className="mt-6 text-xs text-gray-600">
-            <div className="uppercase tracking-wider text-gray-500 mb-2">
-              Demo accounts
-            </div>
-            <div className="rounded-xl bg-gray-50 p-3 space-y-1">
-              <div>
-                Student: <code>student1@example.com</code>
-              </div>
-              <div>
-                Instructor: <code>instructor1@example.com</code>
-              </div>
-              <div>
-                Password: <code>123456</code>
-              </div>
-            </div>
-          </div>
 
           <p className="mt-6 text-sm text-gray-600">
             Don&apos;t have an account?{" "}

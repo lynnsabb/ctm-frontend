@@ -1,17 +1,82 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 
 export default function Register() {
   const nav = useNavigate();
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [form, setForm] = useState({ name: "", email: "", password: "", role: "student" });
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const onChange = (e) =>
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    alert("Registered (mock)");
-    nav("/login");
+    setError("");
+    setSuccess("");
+    setLoading(true);
+
+    // Validate form fields
+    if (!form.name || !form.email || !form.password || !form.role) {
+      setError("Please fill in all fields");
+      setLoading(false);
+      return;
+    }
+
+    // Validate role
+    if (!['student', 'instructor'].includes(form.role)) {
+      setError("Please select a valid role");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/register",
+        {
+          name: form.name,
+          email: form.email,
+          password: form.password,
+          role: form.role,
+        }
+      );
+
+      // Registration successful
+      if (response.data.token) {
+        // Store token in localStorage (optional, for auto-login)
+        localStorage.setItem("ctm_token", response.data.token);
+        
+        // Store user data if provided
+        if (response.data.user) {
+          localStorage.setItem("ctms_user", JSON.stringify(response.data.user));
+        }
+      }
+
+      setSuccess("Registration successful! Redirecting to login...");
+      
+      // Redirect to login after a short delay
+      setTimeout(() => {
+        nav("/login");
+      }, 1500);
+    } catch (err) {
+      // Handle error response
+      if (err.response && err.response.data) {
+        // Backend returned an error message
+        const errorMessage = err.response.data.message || 
+                            err.response.data.error || 
+                            "Registration failed. Please try again.";
+        setError(errorMessage);
+      } else if (err.request) {
+        // Request was made but no response received
+        setError("Unable to connect to server. Please check if the backend is running.");
+      } else {
+        // Something else happened
+        setError("An unexpected error occurred. Please try again.");
+      }
+      setLoading(false);
+    }
   };
 
   return (
@@ -30,6 +95,20 @@ export default function Register() {
         <p className="text-gray-600 text-sm text-center mb-6">
           Create an account to start your learning journey.
         </p>
+
+        {/* Success Message */}
+        {success && (
+          <div className="mb-4 text-sm text-green-600 bg-green-50 border border-green-200 rounded-xl p-3">
+            {success}
+          </div>
+        )}
+
+        {/* Error Message */}
+        {error && (
+          <div className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl p-3">
+            {error}
+          </div>
+        )}
 
         {/* Form */}
         <form onSubmit={onSubmit} className="space-y-4">
@@ -71,11 +150,29 @@ export default function Register() {
             />
           </div>
 
+          <div>
+            <label className="block text-sm font-medium mb-1">Role</label>
+            <select
+              className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-black/20"
+              name="role"
+              value={form.role}
+              onChange={onChange}
+              required
+            >
+              <option value="student">Student</option>
+              <option value="instructor">Instructor</option>
+            </select>
+            <p className="text-xs text-gray-500 mt-1">
+              Select your role: Student to enroll in courses, Instructor to create and manage courses.
+            </p>
+          </div>
+
           <button
             type="submit"
-            className="w-full rounded-xl bg-black text-white py-2.5 hover:bg-black/90 transition"
+            disabled={loading}
+            className="w-full rounded-xl bg-black text-white py-2.5 hover:bg-black/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Create Account
+            {loading ? "Creating Account..." : "Create Account"}
           </button>
         </form>
 

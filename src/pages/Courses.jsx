@@ -1,6 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { mockCourses as courses } from "../data/mock";
+import axios from "axios";
 
 // === Inline SVG icons ===
 function IconSearch(props) {
@@ -47,13 +47,48 @@ function IconClock(props) {
 }
 
 export default function CourseCatalog() {
-  const categories = useMemo(() => ['All', ...Array.from(new Set(courses.map(c => c.category)))], []);
-  const levels = useMemo(() => ['All', ...Array.from(new Set(courses.map(c => c.level)))], []);
-
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedLevel, setSelectedLevel] = useState('All');
   const [selectedSort, setSelectedSort] = useState('Most Popular');
+
+  // Fetch courses from API
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        setLoading(true);
+        setError("");
+        
+        const response = await axios.get("http://localhost:5000/api/courses");
+        setCourses(response.data || []);
+      } catch (err) {
+        if (err.response && err.response.data) {
+          setError(err.response.data.message || "Failed to load courses");
+        } else if (err.request) {
+          setError("Unable to connect to server. Please check if the backend is running.");
+        } else {
+          setError("An unexpected error occurred. Please try again.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
+  const categories = useMemo(() => {
+    const cats = Array.from(new Set(courses.map(c => c.category).filter(Boolean)));
+    return ['All', ...cats];
+  }, [courses]);
+
+  const levels = useMemo(() => {
+    const levs = Array.from(new Set(courses.map(c => c.level).filter(Boolean)));
+    return ['All', ...levs];
+  }, [courses]);
 
   const filteredCourses = useMemo(() => {
     let list = [...courses];
@@ -68,10 +103,10 @@ export default function CourseCatalog() {
     }
     if (selectedCategory !== 'All') list = list.filter(c => c.category === selectedCategory);
     if (selectedLevel !== 'All') list = list.filter(c => c.level === selectedLevel);
-    if (selectedSort === 'Highest Rated') list.sort((a, b) => b.rating - a.rating);
-    else list.sort((a, b) => b.students - a.students);
+    if (selectedSort === 'Highest Rated') list.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    else list.sort((a, b) => (b.students || 0) - (a.students || 0));
     return list;
-  }, [searchQuery, selectedCategory, selectedLevel, selectedSort]);
+  }, [courses, searchQuery, selectedCategory, selectedLevel, selectedSort]);
 
   const getLevelColor = (level) => {
     switch (level) {
@@ -88,18 +123,90 @@ export default function CourseCatalog() {
         <div className="mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-3">All Courses</h1>
           <p className="text-gray-600 text-lg">
-            Explore our collection of {courses.length} courses and start learning today
+            {loading ? "Loading courses..." : `Explore our collection of ${courses.length} courses and start learning today`}
           </p>
         </div>
 
-        {/* === Filters Section (unchanged) === */}
-        {/* Keep the same filters here as in your working version */}
+        {/* === Filters Section === */}
+        <div className="mb-8 space-y-4">
+          {/* Search Bar */}
+          <div className="relative">
+            <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search courses..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black/20"
+            />
+          </div>
+
+          {/* Filters */}
+          <div className="flex flex-wrap gap-4">
+            {/* Category Filter */}
+            <div className="relative">
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="appearance-none pl-4 pr-10 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black/20 bg-white"
+              >
+                {categories.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+              <IconChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+            </div>
+
+            {/* Level Filter */}
+            <div className="relative">
+              <select
+                value={selectedLevel}
+                onChange={(e) => setSelectedLevel(e.target.value)}
+                className="appearance-none pl-4 pr-10 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black/20 bg-white"
+              >
+                {levels.map(level => (
+                  <option key={level} value={level}>{level}</option>
+                ))}
+              </select>
+              <IconChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+            </div>
+
+            {/* Sort Filter */}
+            <div className="relative">
+              <select
+                value={selectedSort}
+                onChange={(e) => setSelectedSort(e.target.value)}
+                className="appearance-none pl-4 pr-10 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black/20 bg-white"
+              >
+                <option value="Most Popular">Most Popular</option>
+                <option value="Highest Rated">Highest Rated</option>
+              </select>
+              <IconChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+            </div>
+          </div>
+        </div>
 
         {/* === Course Grid === */}
-        {filteredCourses.length > 0 ? (
+        {loading ? (
+          <div className="text-center py-16">
+            <div className="text-5xl mb-3">⏳</div>
+            <p className="text-gray-500 text-lg">Loading courses...</p>
+          </div>
+        ) : error ? (
+          <div className="text-center py-16">
+            <div className="text-5xl mb-3">⚠️</div>
+            <p className="text-red-600 text-lg mb-4">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="inline-flex items-center justify-center rounded-xl bg-black text-white px-4 py-2 hover:bg-black/90"
+            >
+              Retry
+            </button>
+          </div>
+        ) : filteredCourses.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCourses.map(course => (
-              <Link key={course.id} to={`/courses/${course.id}`} className="block">
+              <Link key={course._id} to={`/courses/${course._id}`} className="block">
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer">
 
                   {/* Image + Level Badge */}
@@ -136,7 +243,7 @@ export default function CourseCatalog() {
 
                       <div className="flex items-center gap-1">
                         <IconUsers />
-                        <span>{course.students.toLocaleString()}</span>
+                        <span>{(course.students || 0).toLocaleString()}</span>
                       </div>
 
                       <div className="flex items-center gap-1">

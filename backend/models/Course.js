@@ -1,7 +1,36 @@
 // models/Course.js
 import mongoose from 'mongoose';
 
+// Topic schema (nested in module)
+const topicSchema = new mongoose.Schema({
+  id: {
+    type: Number,
+    required: true,
+  },
+  title: {
+    type: String,
+    required: true,
+  },
+  duration: {
+    type: String,
+    default: '',
+  },
+  videoUrl: {
+    type: String,
+    default: '',
+  },
+  content: {
+    type: String,
+    default: '',
+  },
+}, { _id: false });
+
+// Module schema (nested in curriculum)
 const moduleSchema = new mongoose.Schema({
+  id: {
+    type: Number,
+    required: true,
+  },
   title: {
     type: String,
     required: true,
@@ -11,10 +40,10 @@ const moduleSchema = new mongoose.Schema({
     required: true,
   },
   topics: {
-    type: [String],
+    type: [topicSchema],
     default: [],
   },
-});
+}, { _id: false });
 
 const courseSchema = new mongoose.Schema(
   {
@@ -40,7 +69,7 @@ const courseSchema = new mongoose.Schema(
       required: true,
     },
     duration: {
-      type: Number,
+      type: String, // Changed to String to match mock data format like "20h"
       required: true,
     },
     rating: {
@@ -66,7 +95,7 @@ const courseSchema = new mongoose.Schema(
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: false, // Made optional for seed data
     },
   },
   {

@@ -2,16 +2,21 @@
 // Middleware to check user roles
 
 export const requireInstructor = (req, res, next) => {
-  if (req.user.role !== 'instructor') {
-    return res.status(403).json({ message: 'Only instructors can perform this action' });
+  if (req.user && req.user.role === 'instructor') {
+    next();
+  } else {
+    return res.status(403).json({ message: 'Access denied: Instructors only' });
   }
-  next();
 };
 
+// Alias for consistency
+export const isInstructor = requireInstructor;
+
 export const requireStudent = (req, res, next) => {
-  if (req.user.role !== 'student') {
-    return res.status(403).json({ message: 'Only students can perform this action' });
+  if (req.user && req.user.role === 'student') {
+    next();
+  } else {
+    return res.status(403).json({ message: 'Access denied: Students only' });
   }
-  next();
 };
 

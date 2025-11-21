@@ -1,7 +1,7 @@
 // src/pages/CourseDetails.jsx
 import { useState, useMemo, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { mockCourses, enrollWithStructure, getEnrollmentsNormalized, getSessionUser, instructors as instructorsList } from "../data/mock";
+import axios from "axios";
 import { useAuth } from "../state/auth.jsx";
 
 // Icons
@@ -87,137 +87,135 @@ function IconPlayCircle(props) {
 
 export default function CourseDetails({ course: courseProp, onBack }) {
   const { id: idParam } = useParams();
-  const paramId = idParam ? Number(idParam) : undefined;
   const navigate = useNavigate();
   const { user } = useAuth() || { user: null };
 
-  // Prefer prop; else find by route param; else null
-  const fromMock = mockCourses.find(c => c.id === paramId) || null;
-  const base = courseProp || fromMock;
-
-  // Toast state
+  const [course, setCourse] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [enrolling, setEnrolling] = useState(false);
+  const [isEnrolled, setIsEnrolled] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [expandedModule, setExpandedModule] = useState(null);
 
-  // Fallback defaults if some fields aren't in the mock
-  const defaultCurriculum = [
-    {
-      id: 1,
-      title: "Getting Started",
-      description: "First steps and setup",
-      topics: [
-        { id: 1, title: "Introduction & goals", duration: "8m" },
-        { id: 2, title: "Tools & environment", duration: "14m" },
-      ],
-    },
-    {
-      id: 2,
-      title: "Core Concepts",
-      description: "Build real understanding",
-      topics: [
-        { id: 3, title: "Key primitives", duration: "18m" },
-        { id: 4, title: "Project walkthrough", duration: "22m" },
-      ],
-    },
-  ];
+  // Fetch course from API
+  useEffect(() => {
+    const fetchCourse = async () => {
+      try {
+        setLoading(true);
+        setError("");
 
-  const resolveInstructor = () => {
-    if (!base) return null;
+        if (!idParam) {
+          setError("Course ID is required");
+          setLoading(false);
+          return;
+        }
 
-    if (base.instructorId) {
-      const byId = instructorsList.find(i => String(i.id) === String(base.instructorId));
-      if (byId) return byId;
+        const response = await axios.get(
+          `http://localhost:5000/api/courses/${idParam}`
+        );
+
+        setCourse(response.data);
+
+        // Check if user is enrolled
+        if (user && user.role === "student") {
+          const token = localStorage.getItem("ctm_token");
+          if (token) {
+            try {
+              const enrollmentsResponse = await axios.get(
+                "http://localhost:5000/api/enrollments/me",
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+              const enrolled = enrollmentsResponse.data.some(
+                (e) => String(e.courseId._id || e.courseId) === String(response.data._id)
+              );
+              setIsEnrolled(enrolled);
+            } catch (err) {
+              // If enrollment check fails, assume not enrolled
+              setIsEnrolled(false);
+            }
+          }
+        }
+      } catch (err) {
+        if (err.response && err.response.data) {
+          setError(err.response.data.message || "Failed to load course");
+        } else if (err.request) {
+          setError("Unable to connect to server. Please check if the backend is running.");
+        } else {
+          setError("An unexpected error occurred. Please try again.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Use prop if provided, otherwise fetch from API
+    if (courseProp) {
+      setCourse(courseProp);
+      setLoading(false);
+    } else {
+      fetchCourse();
     }
-
-    if (typeof base.instructor === "object" && base.instructor) {
-      const name = base.instructor.name || "Instructor";
-      const photo = base.instructor.photo || base.instructor.image || base.instructor.avatar;
-      const specialty = base.instructor.specialty || base.instructor.role || "Senior Instructor";
-      const students = base.instructor.students || base.instructor.studentsTaught || 25000;
-      const coursesTaught = base.instructor.courses || base.instructor.coursesTaught || 7;
-      const bio = base.instructor.bio || base.instructor.experience || "Passionate educator with real-world experience.";
-      return { name, photo, specialty, students, courses: coursesTaught, bio };
-    }
-
-    if (typeof base.instructor === "string") {
-      const byName = instructorsList.find(i => i.name.toLowerCase() === base.instructor.toLowerCase());
-      if (byName) return byName;
-      return { name: base.instructor, photo: null, specialty: "Senior Instructor", students: 25000, courses: 7, bio: "Passionate educator with real-world experience." };
-    }
-
-    return null;
-  };
-
-  const resolvedInstructor = resolveInstructor();
-  const instructorAvatar = resolvedInstructor?.photo || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=300&auto=format&fit=crop";
-
-  // Compose a course object that the UI expects
-  const courseData = {
-    id: base?.id ?? 0,
-    title: base?.title ?? "Course Title",
-    description: base?.description ?? "Course description goes here.",
-    category: base?.category ?? "General",
-    level: base?.level ?? "Beginner",
-    rating: base?.rating ?? 4.7,
-    students: base?.students ?? 1200,
-    duration: base?.duration ?? "20h",
-    language: base?.language || "English",
-    certificate: base?.certificate === true ? "Yes" : base?.certificate || "Yes",
-    image: base?.image ?? "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=1200&auto=format&fit=crop",
-    instructor: resolvedInstructor ? {
-      name: resolvedInstructor.name,
-      title: resolvedInstructor.specialty || "Senior Instructor",
-      avatar: instructorAvatar,
-      bio: resolvedInstructor.bio || "Passionate educator with real-world experience.",
-      courses: resolvedInstructor.courses || 7,
-      students: resolvedInstructor.students || 25000,
-    } : {
-      name: "Instructor",
-      title: "Senior Instructor",
-      avatar: instructorAvatar,
-      bio: "Passionate educator with real-world experience.",
-      courses: 7,
-      students: 25000,
-    },
-    curriculum: base?.curriculum || defaultCurriculum,
-    learningPoints: base?.learningPoints || [
-      "Understand the fundamentals and best practices",
-      "Build confidence with hands-on exercises",
-      "Apply skills to small projects",
-    ],
-  };
+  }, [idParam, courseProp, user]);
 
   // Total lessons from curriculum topics
   const totalLessons = useMemo(
-    () => (courseData.curriculum || []).reduce((sum, m) => sum + (m.topics?.length || 0), 0),
-    [courseData.curriculum]
+    () => (course?.curriculum || []).reduce((sum, m) => sum + (m.topics?.length || 0), 0),
+    [course?.curriculum]
   );
 
   // Check if user is a student
   const isStudent = user?.role === "student";
-  const sessionUser = user || getSessionUser();
-  const canEnroll = isStudent && sessionUser;
-
-  // Check if user is enrolled
-  const enrolledList = useMemo(() => getEnrollmentsNormalized(), []);
-  const isEnrolled = useMemo(() => {
-    if (!courseData?.id) return false;
-    return enrolledList.some(e =>
-      e.courseId === courseData.id || e.courseId === String(courseData.id) || Number(e.courseId) === courseData.id
-    );
-  }, [enrolledList, courseData?.id]);
-
-  const [expandedModule, setExpandedModule] = useState(null);
+  const canEnroll = isStudent && user;
 
   // Handle enrollment
-  const handleEnroll = () => {
-    if (!canEnroll || isEnrolled || !courseData?.id) return;
-    enrollWithStructure(courseData.id);
-    setShowToast(true);
-    setTimeout(() => navigate("/enrollments"), 1200);
+  const handleEnroll = async () => {
+    if (!canEnroll || isEnrolled || !course?._id) return;
+
+    try {
+      setEnrolling(true);
+      const token = localStorage.getItem("ctm_token");
+      
+      if (!token) {
+        setError("Please log in to enroll in courses");
+        setEnrolling(false);
+        return;
+      }
+
+      await axios.post(
+        "http://localhost:5000/api/enrollments",
+        { courseId: course._id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setIsEnrolled(true);
+      setShowToast(true);
+      setTimeout(() => {
+        navigate("/enrollments");
+      }, 1500);
+    } catch (err) {
+      if (err.response && err.response.data) {
+        setError(err.response.data.message || "Failed to enroll in course");
+      } else if (err.request) {
+        setError("Unable to connect to server. Please check if the backend is running.");
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
+    } finally {
+      setEnrolling(false);
+    }
   };
 
   // Get the first lesson ID for "Start Learning" button
-  const firstLessonId = courseData.curriculum?.[0]?.topics?.[0]?.id || 1;
+  const firstLessonId = course?.curriculum?.[0]?.topics?.[0]?.id || 1;
 
   // Close toast after timeout
   useEffect(() => {
@@ -227,9 +225,71 @@ export default function CourseDetails({ course: courseProp, onBack }) {
     }
   }, [showToast]);
 
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-5xl mb-3">⏳</div>
+          <p className="text-gray-500 text-lg">Loading course...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error && !course) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-5xl mb-3">⚠️</div>
+          <p className="text-red-600 text-lg mb-4">{error}</p>
+          <Link
+            to="/courses"
+            className="inline-flex items-center justify-center rounded-xl bg-black text-white px-4 py-2 hover:bg-black/90"
+          >
+            Back to Courses
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // No course found
+  if (!course) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-5xl mb-3">📚</div>
+          <p className="text-gray-500 text-lg mb-4">Course not found</p>
+          <Link
+            to="/courses"
+            className="inline-flex items-center justify-center rounded-xl bg-black text-white px-4 py-2 hover:bg-black/90"
+          >
+            Back to Courses
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Resolve instructor information
+  const instructorName = typeof course.instructor === "string" 
+    ? course.instructor 
+    : course.instructor?.name || "Instructor";
+  
+  const instructorAvatar = course.instructor?.photo || course.instructor?.avatar || 
+    "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=300&auto=format&fit=crop";
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <main className="max-w-7xl mx-auto px-6 py-8">
+        {error && (
+          <div className="mb-4 bg-red-50 border border-red-200 rounded-xl p-4 text-red-600">
+            {error}
+          </div>
+        )}
+
         {onBack ? (
           <button onClick={onBack} className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition">
             <IconArrowLeft />
@@ -247,30 +307,30 @@ export default function CourseDetails({ course: courseProp, onBack }) {
           <div className="lg:col-span-2 space-y-6">
             <div>
               <span className="px-3 py-1 bg-gray-900 text-white text-sm font-medium rounded-full mr-2">
-                {courseData.category}
+                {course.category}
               </span>
               <span className="px-3 py-1 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-full">
-                {courseData.level}
+                {course.level}
               </span>
-              <h1 className="text-4xl font-bold text-gray-900 mt-4">{courseData.title}</h1>
-              <p className="text-lg text-gray-600 mt-2">{courseData.description}</p>
+              <h1 className="text-4xl font-bold text-gray-900 mt-4">{course.title}</h1>
+              <p className="text-lg text-gray-600 mt-2">{course.description}</p>
             </div>
 
             {/* Stats */}
             <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600">
               <div className="flex items-center gap-1">
                 <IconStar className="text-yellow-400" />
-                <span className="font-semibold text-gray-900">{courseData.rating}</span>
+                <span className="font-semibold text-gray-900">{course.rating || 0}</span>
                 <span>rating</span>
               </div>
               <div className="flex items-center gap-1">
                 <IconUsers />
-                <span className="font-semibold text-gray-900">{courseData.students.toLocaleString?.() ?? courseData.students}</span>
+                <span className="font-semibold text-gray-900">{(course.students || 0).toLocaleString()}</span>
                 <span>students</span>
               </div>
               <div className="flex items-center gap-1">
                 <IconClock />
-                <span className="font-semibold text-gray-900">{courseData.duration}</span>
+                <span className="font-semibold text-gray-900">{course.duration}</span>
               </div>
               <div className="flex items-center gap-1">
                 <IconBook />
@@ -280,10 +340,10 @@ export default function CourseDetails({ course: courseProp, onBack }) {
             </div>
 
             {/* What you'll learn */}
-            {courseData.learningPoints?.length > 0 && (
+            {course.learningPoints && course.learningPoints.length > 0 && (
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">What You'll Learn</h2>
-                {courseData.learningPoints.map((p, i) => (
+                {course.learningPoints.map((p, i) => (
                   <div key={i} className="flex items-start gap-3 mb-2">
                     <IconCheckCircle className="text-green-500 mt-0.5" />
                     <span className="text-gray-700">{p}</span>
@@ -295,55 +355,49 @@ export default function CourseDetails({ course: courseProp, onBack }) {
             {/* Curriculum */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Course Curriculum</h2>
-              {courseData.curriculum.map((mod, idx) => {
-                const key = mod.id ?? idx;
-                const open = key === expandedModule;
-                return (
-                  <div key={key} className="border border-gray-200 rounded-lg mb-3">
-                    <button
-                      onClick={() => setExpandedModule(open ? null : key)}
-                      className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition text-left"
-                    >
-                      <div>
-                        <h3 className="font-semibold text-gray-900">{`Module ${idx + 1}: ${mod.title}`}</h3>
-                        {mod.description && <p className="text-sm text-gray-600">{mod.description}</p>}
-                      </div>
-                      <IconChevronDown className={`text-gray-400 transition-transform ${open ? "rotate-180" : ""}`} />
-                    </button>
-                    {open && (
-                      <div className="border-t border-gray-200 bg-gray-50">
-                        {(mod.topics || []).map((t, i) => (
-                          <div key={i} className="px-4 py-3 flex items-center justify-between hover:bg-gray-100 transition">
-                            <span className="text-gray-700">{t.title}</span>
-                            {t.duration && <span className="text-sm text-gray-500">{t.duration}</span>}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+              {course.curriculum && course.curriculum.length > 0 ? (
+                course.curriculum.map((mod, idx) => {
+                  const key = mod.id ?? idx;
+                  const open = key === expandedModule;
+                  return (
+                    <div key={key} className="border border-gray-200 rounded-lg mb-3">
+                      <button
+                        onClick={() => setExpandedModule(open ? null : key)}
+                        className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition text-left"
+                      >
+                        <div>
+                          <h3 className="font-semibold text-gray-900">{`Module ${idx + 1}: ${mod.title}`}</h3>
+                          {mod.description && <p className="text-sm text-gray-600">{mod.description}</p>}
+                        </div>
+                        <IconChevronDown className={`text-gray-400 transition-transform ${open ? "rotate-180" : ""}`} />
+                      </button>
+                      {open && (
+                        <div className="border-t border-gray-200 bg-gray-50">
+                          {(mod.topics || []).map((t, i) => (
+                            <div key={i} className="px-4 py-3 flex items-center justify-between hover:bg-gray-100 transition">
+                              <span className="text-gray-700">{t.title}</span>
+                              {t.duration && <span className="text-sm text-gray-500">{t.duration}</span>}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              ) : (
+                <p className="text-gray-500">No curriculum available for this course.</p>
+              )}
             </div>
 
             {/* Instructor */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">About the Instructor</h2>
               <div className="flex items-start gap-4">
-                <img src={courseData.instructor.avatar} alt={courseData.instructor.name} className="w-20 h-20 rounded-full object-cover" />
+                <img src={instructorAvatar} alt={instructorName} className="w-20 h-20 rounded-full object-cover" />
                 <div>
-                  <h3 className="text-xl font-bold">{courseData.instructor.name}</h3>
-                  <p className="text-sm text-gray-500 mb-2">{courseData.instructor.title}</p>
-                  <p className="text-gray-600 mb-3">{courseData.instructor.bio}</p>
-                  <div className="flex gap-8 text-sm">
-                    <div>
-                      <p className="text-gray-500">Courses</p>
-                      <p className="font-semibold text-gray-900">{courseData.instructor.courses}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">Students</p>
-                      <p className="font-semibold text-gray-900">{courseData.instructor.students.toLocaleString?.() ?? courseData.instructor.students}</p>
-                    </div>
-                  </div>
+                  <h3 className="text-xl font-bold">{instructorName}</h3>
+                  <p className="text-sm text-gray-500 mb-2">Instructor</p>
+                  <p className="text-gray-600 mb-3">Experienced educator passionate about teaching.</p>
                 </div>
               </div>
             </div>
@@ -352,28 +406,28 @@ export default function CourseDetails({ course: courseProp, onBack }) {
           {/* RIGHT — Info only */}
           <aside className="lg:col-span-1">
             <div className="bg-white rounded-xl shadow-lg border border-gray-200 sticky top-8 overflow-hidden">
-              <img src={courseData.image} alt={courseData.title} className="w-full h-64 object-cover" />
+              <img 
+                src={course.image || "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=1200&auto=format&fit=crop"} 
+                alt={course.title} 
+                className="w-full h-64 object-cover" 
+              />
               <div className="p-6 space-y-4">
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Duration</span>
-                    <span className="font-semibold text-gray-900">{courseData.duration}</span>
+                    <span className="font-semibold text-gray-900">{course.duration}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Lessons</span>
                     <span className="font-semibold text-gray-900">{totalLessons}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Language</span>
-                    <span className="font-semibold text-gray-900 flex items-center gap-1">
-                      <IconGlobe className="w-4 h-4" /> {courseData.language}
-                    </span>
+                    <span className="text-gray-600">Category</span>
+                    <span className="font-semibold text-gray-900">{course.category}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Certificate</span>
-                    <span className="font-semibold text-gray-900 flex items-center gap-1">
-                      <IconCertificate className="w-4 h-4" /> {courseData.certificate}
-                    </span>
+                    <span className="text-gray-600">Level</span>
+                    <span className="font-semibold text-gray-900">{course.level}</span>
                   </div>
                 </div>
 
@@ -391,7 +445,7 @@ export default function CourseDetails({ course: courseProp, onBack }) {
                         </button>
                         {/* START LEARNING BUTTON */}
                         <Link
-                          to={`/courses/${courseData.id}/learn/${firstLessonId}`}
+                          to={`/courses/${course._id}/learn/${firstLessonId}`}
                           className="w-full inline-flex justify-center items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition shadow-lg hover:shadow-xl"
                         >
                           <IconPlayCircle />
@@ -401,9 +455,10 @@ export default function CourseDetails({ course: courseProp, onBack }) {
                     ) : (
                       <button
                         onClick={handleEnroll}
-                        className="w-full inline-flex justify-center px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition shadow-lg hover:shadow-xl"
+                        disabled={enrolling}
+                        className="w-full inline-flex justify-center px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        Enroll Now
+                        {enrolling ? "Enrolling..." : "Enroll Now"}
                       </button>
                     )}
                     <Link
