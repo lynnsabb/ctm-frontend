@@ -1,5 +1,5 @@
 // models/User.js
-// farah
+// adam
 import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema(
