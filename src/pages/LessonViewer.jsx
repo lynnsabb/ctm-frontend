@@ -1,7 +1,7 @@
 // src/pages/LessonViewer.jsx
 import { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getCourseById } from '../data/mock';
+import axios from 'axios';
 
 // Icons
 function IconPlay(props) {
@@ -286,15 +286,30 @@ export default function LessonViewer() {
     const [course, setCourse] = useState(null);
     const [completedLessons, setCompletedLessons] = useState([]);
     const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
     useEffect(() => {
-        const courseData = getCourseById(Number(courseId));
-        if (courseData) {
-            setCourse(courseData);
+        const fetchCourse = async () => {
+            try {
+                setLoading(true);
+                setError("");
+                const response = await axios.get(`http://localhost:5000/api/courses/${courseId}`);
+                setCourse(response.data);
+            } catch (err) {
+                console.error("Error fetching course:", err);
+                setError("Failed to load course. Please try again.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (courseId) {
+            fetchCourse();
         }
     }, [courseId]);
 
-    if (!course) {
+    if (loading) {
         return (
             <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
                 <p className="text-xl">Loading course...</p>
@@ -302,11 +317,28 @@ export default function LessonViewer() {
         );
     }
 
+    if (error || !course) {
+        return (
+            <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+                <div className="text-center">
+                    <p className="text-xl mb-4">{error || "Course not found"}</p>
+                    <button
+                        onClick={() => navigate("/courses")}
+                        className="px-4 py-2 bg-indigo-600 rounded-lg hover:bg-indigo-700"
+                    >
+                        Back to Courses
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
     // Flatten all lessons from curriculum
-    const allLessons = (course.curriculum || []).flatMap(module =>
-        (module.topics || []).map(topic => ({
+    const allLessons = (course.curriculum || []).flatMap((module, moduleIndex) =>
+        (module.topics || []).map((topic, topicIndex) => ({
             ...topic,
-            moduleId: module.id,
+            id: topic.id || `${moduleIndex}-${topicIndex}`, // Use topic.id or generate one
+            moduleId: module.id || moduleIndex,
             moduleTitle: module.title
         }))
     );
@@ -319,7 +351,9 @@ export default function LessonViewer() {
         );
     }
 
-    const currentLessonIndex = allLessons.findIndex(l => l.id === Number(lessonId));
+    const currentLessonIndex = allLessons.findIndex(l => 
+        String(l.id) === String(lessonId) || l.id === Number(lessonId)
+    );
     const currentLesson = currentLessonIndex >= 0 ? allLessons[currentLessonIndex] : allLessons[0];
     const prevLesson = currentLessonIndex > 0 ? allLessons[currentLessonIndex - 1] : null;
     const nextLesson = currentLessonIndex < allLessons.length - 1 ? allLessons[currentLessonIndex + 1] : null;
@@ -335,7 +369,7 @@ export default function LessonViewer() {
     };
 
     const handleLessonClick = (lesson) => {
-        navigate(`/courses/${courseId}/learn/${lesson.id}`);
+        navigate(`/courses/${courseId}/learn/${lesson.id || lesson._id}`);
     };
 
     const progressPercentage = (completedLessons.length / allLessons.length) * 100;
@@ -381,29 +415,32 @@ export default function LessonViewer() {
                             </p>
                         </div>
 
-                        {(course.curriculum || []).map((module) => (
-                            <div key={module.id} className="mb-4">
+                        {(course.curriculum || []).map((module, moduleIdx) => (
+                            <div key={module.id || moduleIdx} className="mb-4">
                                 <h3 className="font-semibold text-gray-300 mb-2 px-2 text-sm">{module.title}</h3>
-                                {(module.topics || []).map((topic) => (
-                                    <button
-                                        key={topic.id}
-                                        onClick={() => handleLessonClick(topic)}
-                                        className={`w-full text-left p-3 rounded-lg mb-1 flex items-center justify-between transition-colors ${currentLesson?.id === topic.id
-                                            ? 'bg-indigo-600 text-white'
-                                            : 'hover:bg-gray-700 text-gray-300'
-                                            }`}
-                                    >
-                                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                                            {completedLessons.includes(topic.id) && (
-                                                <IconCheck className="text-green-400 flex-shrink-0" />
-                                            )}
-                                            <div className="min-w-0 flex-1">
-                                                <div className="text-sm font-medium truncate">{topic.title}</div>
-                                                <div className="text-xs text-gray-400">{topic.duration}</div>
+                                {(module.topics || []).map((topic, topicIdx) => {
+                                    const topicId = topic.id || `${moduleIdx}-${topicIdx}`;
+                                    return (
+                                        <button
+                                            key={topicId}
+                                            onClick={() => handleLessonClick(topic)}
+                                            className={`w-full text-left p-3 rounded-lg mb-1 flex items-center justify-between transition-colors ${String(currentLesson?.id) === String(topicId)
+                                                ? 'bg-indigo-600 text-white'
+                                                : 'hover:bg-gray-700 text-gray-300'
+                                                }`}
+                                        >
+                                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                                                {completedLessons.includes(topicId) && (
+                                                    <IconCheck className="text-green-400 flex-shrink-0" />
+                                                )}
+                                                <div className="min-w-0 flex-1">
+                                                    <div className="text-sm font-medium truncate">{topic.title}</div>
+                                                    <div className="text-xs text-gray-400">{topic.duration}</div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </button>
-                                ))}
+                                        </button>
+                                    );
+                                })}
                             </div>
                         ))}
                     </div>

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import { useAuth } from "../state/auth.jsx";
 
 import { 
-  mockCourses as courses,
   instructors,
   testimonials,
   howItWorksSteps,
@@ -209,11 +209,29 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  // Fetch courses from API
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get("http://localhost:5000/api/courses");
+        setCourses(response.data || []);
+      } catch (err) {
+        console.error("Error fetching courses:", err);
+        setCourses([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCourses();
+  }, []);
 
   // Get top 6 courses sorted by rating (for popular section)
   const popularCourses = [...courses]
-    .sort((a, b) => b.rating - a.rating)
+    .sort((a, b) => (b.rating || 0) - (a.rating || 0))
     .slice(0, 6);
 
   // Filter courses based on search query
@@ -246,7 +264,9 @@ export default function Home() {
 
   // Get learning path courses
   const getPathCourses = (courseIds) => {
-    return courses.filter(c => courseIds.includes(c.id));
+    // For learning paths, we'll use the first few courses from the fetched courses
+    // since courseIds in mock data are numeric but MongoDB uses _id
+    return courses.slice(0, courseIds.length);
   };
 
   return (
@@ -403,9 +423,13 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredPopularCourses.length > 0 ? (
+            {loading ? (
+              <div className="col-span-full text-center py-12">
+                <p className="text-gray-500 text-lg">Loading courses...</p>
+              </div>
+            ) : filteredPopularCourses.length > 0 ? (
               filteredPopularCourses.map((course) => (
-                <div key={course.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                <div key={course._id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                   <div className="relative h-48 overflow-hidden bg-gradient-to-br from-purple-100 to-blue-100">
                     <img
                       src={course.image}
@@ -435,11 +459,11 @@ export default function Home() {
                       </div>
                       <div className="flex items-center gap-1">
                         <IconUsers />
-                        <span>{course.students.toLocaleString()}</span>
+                        <span>{(course.students || 0).toLocaleString()}</span>
                       </div>
                     </div>
                     <Link
-                      to={`/courses/${course.id}`}
+                      to={`/courses/${course._id}`}
                       className="block w-full text-center px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors"
                     >
                       View Details
@@ -480,8 +504,8 @@ export default function Home() {
                   <div className="space-y-2">
                     {pathCourses.slice(0, 3).map((course) => (
                       <Link
-                        key={course.id}
-                        to={`/courses/${course.id}`}
+                        key={course._id}
+                        to={`/courses/${course._id}`}
                         className="block text-sm text-indigo-600 hover:text-indigo-700"
                       >
                         • {course.title}
