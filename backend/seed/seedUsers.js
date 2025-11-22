@@ -1,4 +1,5 @@
 // backend/seed/seedUsers.js
+// adam , lynn
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';

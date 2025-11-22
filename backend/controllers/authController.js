@@ -1,4 +1,5 @@
 // controllers/authController.js
+// micheal 
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
@@ -168,6 +169,98 @@ export const getUserById = async (req, res, next) => {
     res.json(user);
   } catch (error) {
     console.error('Get user by ID error:', error);
+    next(error);
+  }
+};
+
+// PUT /api/auth/update-profile - Update user profile
+export const updateProfile = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const { name, email } = req.body;
+
+    // Validate required fields
+    if (!name || !email) {
+      return res.status(400).json({ message: 'Please provide name and email' });
+    }
+
+    // Find user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Check if email is being changed and if it already exists for another user
+    if (email !== user.email) {
+      const existingUser = await User.findOne({ email });
+      if (existingUser && String(existingUser._id) !== String(userId)) {
+        return res.status(400).json({ message: 'Email already exists for another account' });
+      }
+    }
+
+    // Update only name and email
+    user.name = name.trim();
+    user.email = email.trim().toLowerCase();
+
+    await user.save();
+
+    // Return updated user without password
+    const updatedUser = await User.findById(userId).select('-password');
+
+    res.json({
+      message: 'Profile updated successfully',
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error('Update profile error:', error);
+    if (error.code === 11000) {
+      return res.status(400).json({ message: 'Email already exists for another account' });
+    }
+    next(error);
+  }
+};
+
+// PUT /api/auth/change-password - Change user password
+export const changePassword = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const { currentPassword, newPassword } = req.body;
+
+    // Validate required fields
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Please provide current password and new password' });
+    }
+
+    // Validate new password length
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'New password must be at least 6 characters long' });
+    }
+
+    // Find user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Verify current password
+    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: 'Current password is incorrect' });
+    }
+
+    // Hash new password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    // Update password
+    user.password = hashedPassword;
+    await user.save();
+
+    res.json({
+      message: 'Password updated successfully',
+    });
+  } catch (error) {
+    console.error('Change password error:', error);
     next(error);
   }
 };

@@ -6,6 +6,8 @@ import CourseDetails from "./pages/CourseDetails";
 import Enrollments from "./pages/Enrollments";
 import ManageCourse from "./pages/ManageCourse";
 import Profile from "./pages/Profile";
+import EditProfile from "./pages/EditProfile";
+import ChangePassword from "./pages/ChangePassword";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
@@ -51,6 +53,22 @@ export default function App() {
             element={
               <Protected>
                 <Profile />
+              </Protected>
+            }
+          />
+          <Route
+            path="/profile/edit"
+            element={
+              <Protected>
+                <EditProfile />
+              </Protected>
+            }
+          />
+          <Route
+            path="/profile/change-password"
+            element={
+              <Protected>
+                <ChangePassword />
               </Protected>
             }
           />

@@ -1,4 +1,5 @@
 // routes/authRoutes.js
+// farah
 import express from 'express';
 import {
   register,
@@ -7,6 +8,8 @@ import {
   getUsers,
   getProfile,
   getUserById,
+  updateProfile,
+  changePassword,
 } from '../controllers/authController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 import { validateObjectId } from '../utils/validateObjectId.js';
@@ -62,6 +65,20 @@ router.get('/profile', authMiddleware, getProfile);
  * @access  Private
  */
 router.get('/users/:id', authMiddleware, validateObjectId, getUserById);
+
+/**
+ * @route   PUT /api/auth/update-profile
+ * @desc    Update user profile (name and email)
+ * @access  Private
+ */
+router.put('/update-profile', authMiddleware, updateProfile);
+
+/**
+ * @route   PUT /api/auth/change-password
+ * @desc    Change user password
+ * @access  Private
+ */
+router.put('/change-password', authMiddleware, changePassword);
 
 export default router;
 

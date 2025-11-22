@@ -276,10 +276,10 @@ export default function CourseDetails({ course: courseProp, onBack }) {
   // Resolve instructor information
   const instructorName = typeof course.instructor === "string" 
     ? course.instructor 
-    : course.instructor?.name || "Instructor";
+    : course.instructor?.name || course.createdBy?.name || "Instructor";
   
   const instructorAvatar = course.instructor?.photo || course.instructor?.avatar || 
-    "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=300&auto=format&fit=crop";
+    course.createdBy?.avatar || "https://ui-avatars.com/api/?name=" + encodeURIComponent(instructorName) + "&background=6366f1&color=fff";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -397,7 +397,9 @@ export default function CourseDetails({ course: courseProp, onBack }) {
                 <div>
                   <h3 className="text-xl font-bold">{instructorName}</h3>
                   <p className="text-sm text-gray-500 mb-2">Instructor</p>
-                  <p className="text-gray-600 mb-3">Experienced educator passionate about teaching.</p>
+                  {course.createdBy?.email && (
+                    <p className="text-gray-600 mb-3 text-sm">{course.createdBy.email}</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -406,11 +408,17 @@ export default function CourseDetails({ course: courseProp, onBack }) {
           {/* RIGHT — Info only */}
           <aside className="lg:col-span-1">
             <div className="bg-white rounded-xl shadow-lg border border-gray-200 sticky top-8 overflow-hidden">
-              <img 
-                src={course.image || "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=1200&auto=format&fit=crop"} 
-                alt={course.title} 
-                className="w-full h-64 object-cover" 
-              />
+              {course.image ? (
+                <img 
+                  src={course.image} 
+                  alt={course.title} 
+                  className="w-full h-64 object-cover" 
+                />
+              ) : (
+                <div className="w-full h-64 bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
+                  <span className="text-6xl">🎓</span>
+                </div>
+              )}
               <div className="p-6 space-y-4">
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">

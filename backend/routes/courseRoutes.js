@@ -1,4 +1,5 @@
-// routes/courseRoutes.js
+// routes/courseRoutes.js\
+// micheal 
 import express from 'express';
 import {
   getAllCourses,

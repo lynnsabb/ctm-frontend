@@ -1,4 +1,5 @@
 // backend/seed/seedCourses.js
+// adam , lynn
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { readFileSync } from 'fs';

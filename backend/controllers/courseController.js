@@ -1,4 +1,5 @@
 // controllers/courseController.js
+// micheal 
 import mongoose from 'mongoose';
 import Course from '../models/Course.js';
 import User from '../models/User.js';

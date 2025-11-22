@@ -1,5 +1,6 @@
 // middleware/roleMiddleware.js
 // Middleware to check user roles
+// adam
 
 export const requireInstructor = (req, res, next) => {
   if (req.user && req.user.role === 'instructor') {

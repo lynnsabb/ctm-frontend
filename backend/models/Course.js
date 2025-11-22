@@ -1,4 +1,5 @@
 // models/Course.js
+// done with lynn , farah , adam
 import mongoose from 'mongoose';
 
 // Topic schema (nested in module)
